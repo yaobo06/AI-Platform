@@ -77,10 +77,12 @@ Vue.use(Element, {
 })
 
 Vue.config.productionTip = false
-
-new Vue({
-  el: '#app',
+const app = new Vue({
+  // el: '#app',
+  render: h => h(App),
   router,
   store,
-  render: h => h(App)
 })
+
+app.$mount("#app")
+
