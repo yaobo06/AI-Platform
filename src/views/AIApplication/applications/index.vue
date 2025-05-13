@@ -57,7 +57,7 @@
         </div>
       </el-col>
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in appList" :key="item.id">
-        <div class="card edit">
+        <div class="card edit" @click.stop="goTo(item)">
           <div class="content">
             <div class="img">
               <svg-icon v-if="!item.cover" icon-class="documentation" />
@@ -72,7 +72,7 @@
             <div class="left">
 
             </div>
-            <div class="right">
+            <div class="right" @click.stop>
               <el-dropdown trigger="click" @command="(methodName) => {
                 handleCommand(methodName, item);
               }">
@@ -194,6 +194,11 @@
         <el-form-item label="应用封面" prop="cover">
           <ImageUpload v-model="form.cover" :limit="1"/>
         </el-form-item>
+        <el-form-item label="链接地址" prop="appUrl" required :rules="[{required: true, message: '请输入链接地址', trigger: 'blur'}, {validator: (rule, value, callback) => {
+          /^http/.test(value) ? callback() : callback('请输入http链接地址');
+        }, message: '请输入http链接地址', trigger: 'blur'}]">
+          <el-input v-model="form.appUrl" type="text" maxlength="300" placeholder="请输入内容" />
+        </el-form-item>
         <el-form-item label="应用描述" prop="des">
           <el-input v-model="form.des" type="textarea" rows="3" maxlength="300" placeholder="请输入" />
         </el-form-item>
@@ -265,6 +270,13 @@ export default {
     this.modelsRemoteMethod();
   },
   methods: {
+    goTo({appUrl}) {
+      if(!appUrl) {
+        this.$modal.msgError('链接地址为空');
+        return;
+      }
+      window.open(appUrl);
+    },
     // 获取模型
     modelsRemoteMethod(str, immediate = false) {
       this.getModelsTimer && clearTimeout(this.getModelsTimer);
@@ -394,9 +406,10 @@ export default {
     box-sizing: border-box;
     height: 100%;
     min-height: 140px;
+    cursor: pointer;
     &.add {
       background-color: #F3F4F6;
-      cursor: pointer;
+      
       .title {
         font-size: 16px;
         color: #6B7280;

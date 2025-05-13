@@ -56,7 +56,7 @@
         <el-table-column label="图片质量" align="center" prop="imageQuality" />
         <el-table-column label="图片风格" align="center" prop="imageStyle" />
         <el-table-column label="向量维数" align="center" prop="dimension" /> -->
-        <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" width="140" fixed="right" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
               v-hasPermi="['system:model:edit']">修改</el-button>
@@ -71,7 +71,7 @@
     </div>
     <!-- 添加或修改LLM模型配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="模型别名" prop="name" required :rules="[{required: true, message: '请输入模型别名', trigger: 'blur'}]">
           <el-input v-model="form.name" placeholder="请输入" />
         </el-form-item>
@@ -138,12 +138,15 @@
 <script>
 import { listModel, getModel, delModel, addModel, updateModel } from "../model";
 export default {
-  name: "Model",
+  name: "ChatModel",
+  props: {
+    type: {}
+  },
   data() {
     const navList = [
         {
           label: "OpenAI",
-          value: "0"
+          value: "OpenAI"
         },
         {
           label: "百度千帆",
@@ -221,7 +224,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        type: null,
+        // type: null,
         model: null,
         // provider: null,
         name: null,
@@ -262,7 +265,7 @@ export default {
     getList() {
       this.loading = true;
       this.modelList = [];
-      listModel({...this.queryParams, provider: this.activeNav}).then(response => {
+      listModel({...this.queryParams, provider: this.activeNav, type: this.type}).then(response => {
         this.modelList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -277,13 +280,13 @@ export default {
     reset() {
       this.form = {
         id: null,
-        type: null,
+        // type: null,
         model: null,
-        provider: null,
+        // provider: null,
         name: null,
         responseLimit: 1985,
-        temperature: null,
-        topP: null,
+        temperature: 0.2,
+        topP: 0.8,
         apiKey: null,
         baseUrl: null,
         secretKey: null,
@@ -332,16 +335,22 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      // console.log(this.activeNav)
       this.$refs["form"].validate(valid => {
         if (valid) {
+          const params = {
+            ...this.form,
+            provider: this.activeNav,
+            type: this.type
+          }
           if (this.form.id != null) {
-            updateModel(this.form).then(response => {
+            updateModel(params).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addModel(this.form).then(response => {
+            addModel(params).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -353,7 +362,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除LLM模型配置编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除模型配置编号为"' + ids + '"的数据项？').then(function () {
         return delModel(ids);
       }).then(() => {
         this.getList();
@@ -380,22 +389,29 @@ export default {
   .nav-list-box {
     padding: 20px;
     width: 200px;
+    height: 100%;
     box-sizing: border-box;
-    
+    display: flex;
+    flex-direction: column;
     & > .title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       text-align: left;
     }
     .nav-list {
+      flex-grow: 1;
+      height: 0px;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
       .nav-item {
         padding: 8px 10px;
         text-align: left;
         margin: 4px 0px;
         cursor: pointer;
         border-radius: 5px;
+        transition: all 0.3s;
         &:hover {
           background-color: #f5f5f5;
         }

@@ -1,5 +1,14 @@
 import request from '@/utils/request'
-
+// 查询向量模型列表
+export function getModels(keyWords) {
+  return request({
+    url: '/system/model/listBy',
+    method: 'get',
+    params: {
+      keyWords
+    }
+  })
+}
 // 查询向量数据库列表
 export function getVectorLibrary(keyWords) {
   return request({

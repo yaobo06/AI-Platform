@@ -73,7 +73,7 @@
         </div>
       </el-col>
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in knowledgeList" :key="item.id">
-        <div class="card edit">
+        <div class="card edit" @click.stop="goTo(item)">
           <div class="content">
             <div class="img">
               <svg-icon icon-class="documentation" />
@@ -87,7 +87,7 @@
             <div class="left">
 
             </div>
-            <div class="right">
+            <div class="right" @click.stop>
               <el-dropdown trigger="click" @command="(methodName) => {
                 handleCommand(methodName, item);
               }">
@@ -158,14 +158,18 @@
         <el-form-item label="向量模型" prop="embedModelId" required :rules="[{required: true, message: '请选择向量模型', trigger: 'blur'}]">
           <el-select v-model="form.embedModelId" remote :loading="librariesLoading" :remote-method="librariesRemoteMethod" filterable placeholder="请选择" style="width: 100%;">
             <el-option
-              v-for="item in libraries || []"
+              v-for="item in modelList || []"
               :key="item.id"
               :label="item.name"
-              :value="item.id">
+              :value="item.id + ''">
             </el-option>
           </el-select>
         </el-form-item>
-        
+        <el-form-item label="链接地址" prop="knowledgeUrl" required :rules="[{required: true, message: '请输入链接地址', trigger: 'blur'}, {validator: (rule, value, callback) => {
+          /^http/.test(value) ? callback() : callback('请输入http链接地址');
+        }, message: '请输入http链接地址', trigger: 'blur'}]">
+          <el-input v-model="form.knowledgeUrl" type="text" maxlength="300" placeholder="请输入内容" />
+        </el-form-item>
         <el-form-item label="知识库描述" prop="des">
           <el-input v-model="form.des" type="textarea" rows="3" maxlength="300" placeholder="请输入描述" />
         </el-form-item>
@@ -179,7 +183,7 @@
 </template>
 
 <script>
-import { listKnowledge, getKnowledge, delKnowledge, addKnowledge, updateKnowledge, getVectorLibrary } from "./knowledge";
+import { listKnowledge, getKnowledge, delKnowledge, addKnowledge, updateKnowledge, getVectorLibrary, getModels } from "./knowledge";
 
 export default {
   name: "Knowledge",
@@ -221,25 +225,55 @@ export default {
       },
       // 向量数据库选项
       libraries: [],
+      getLibrariesTimer: null,
+      librariesLoading: false,
+      // 向量模型选项
+      modelList: [],
       getModelsTimer: null,
-      librariesLoading: false
+      modelsLoading: false,
     };
   },
   watch: {
     open(n) {
       if(!n) return;
       this.librariesRemoteMethod();
+      this.modelsRemoteMethod();
     }
   },
   created() {
     this.getList();
     this.librariesRemoteMethod();
+    this.modelsRemoteMethod();
   },
   methods: {
-    // 获取向量知识库
-    librariesRemoteMethod(str, immediate = false) {
+    goTo({knowledgeUrl}) {
+      if(!knowledgeUrl) {
+        this.$modal.msgError('链接地址为空');
+        return;
+      }
+      window.open(knowledgeUrl);
+    },
+    // 获取向量模型
+    modelsRemoteMethod(str, immediate = false) {
       this.getModelsTimer && clearTimeout(this.getModelsTimer);
       this.getModelsTimer = setTimeout(() => {
+        this.modelsLoading = true;
+        getModels(str).then(res => {
+          console.log(111, res)
+          this.modelList = res.data;
+        }).catch(() => {
+          this.modelList = [];
+        }).finally(() => {
+          this.modelsLoading = false;
+        });
+      }, immediate ? 0 : 800);
+
+      
+    },
+    // 获取向量知识库
+    librariesRemoteMethod(str, immediate = false) {
+      this.getLibrariesTimer && clearTimeout(this.getLibrariesTimer);
+      this.getLibrariesTimer = setTimeout(() => {
         this.librariesLoading = true;
         getVectorLibrary(str).then(res => {
           console.log(111, res)
@@ -364,9 +398,10 @@ export default {
     padding: 10px 14px;
     box-sizing: border-box;
     height: 140px;
+    cursor: pointer;
     &.add {
       background-color: #F3F4F6;
-      cursor: pointer;
+      
       .title {
         font-size: 16px;
         color: #6B7280;

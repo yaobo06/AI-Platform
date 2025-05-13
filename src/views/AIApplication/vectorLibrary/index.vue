@@ -84,7 +84,7 @@
       <el-table-column label="数据库名称" align="center" prop="databaseName" />
       <el-table-column label="表名称" align="center" prop="tableName" />
       <el-table-column label="向量维数" align="center" prop="dimension" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"

@@ -20,7 +20,10 @@
         v-for="item in modelProviderTypeList" :key="item.value"
         :name="item.value"
         :label="item.label">
-        <component :is="item.component" />
+        <transition name="fade-transform" mode="out-in">
+          <component v-if="show && item.value === activeTab" :is="item.component" :type="item.value" />
+        </transition>
+        
       </el-tab-pane>
     </el-tabs>
     
@@ -29,17 +32,41 @@
 
 <script>
 import cmChat from "./components/Chat.vue";
+import cmEmbedding from "./components/Embedding.vue";
+import cmImage from "./components/Image.vue";
 export default {
   data() {
+    const modelProviderTypeList = [
+      {
+        label: "Chat模型供应商",
+        value: "1",
+        component: cmChat,
+      },
+      {
+        label: "Embedding向量模型",
+        value: "2",
+        component: cmEmbedding,
+      },
+      {
+        label: "Image文生图模型",
+        value: "3",
+        component: cmImage,
+      }
+    ]
     return {
-      activeTab: 0,
-      modelProviderTypeList: [
-        {
-          label: "Chat模型供应商",
-          value: "0",
-          component: cmChat,
-        }
-      ]
+      activeTab: modelProviderTypeList?.[0]?.value,
+      modelProviderTypeList,
+      show: true,
+      showTimer: null
+    }
+  },
+  watch: {
+    activeTab() {
+      this.show = false
+      clearTimeout(this.showTimer)
+      this.showTimer = setTimeout(() => {
+        this.show = true
+      }, 300)
     }
   }
 }
@@ -50,15 +77,33 @@ export default {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  .el-tabs {
+  ::v-deep .el-tabs {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    ::v-deep .el-tabs__content {
+    .el-tabs__header {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 50px;
+      border-bottom: 1px solid #ebeef5;
+      .el-tabs__nav-wrap::after {
+        display: none;
+      }
+      .el-tabs__item {
+        font-weight: bold;
+        font-size: 16px;
+      }
+    }
+    .el-tabs__content {
       flex-grow: 1;
       height: 0px;
+      .el-tab-pane {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
     }
   }
 }
