@@ -296,9 +296,16 @@ export default {
     },
     /** 查询提示词列表 */
     getList() {
+      // console.log(888,process.env.VUE_APP_BASE_API)
       this.loading = true;
       listApp(this.queryParams).then(response => {
-        this.appList = response.rows;
+        this.appList = response.rows.map(item => {
+          return {
+            ...item,
+            src: `${process.env.VUE_APP_BASE_API}${item.cover}`
+          }
+        });
+        console.log(888, this.appList)
         this.total = response.total;
         this.loading = false;
       });
@@ -407,6 +414,10 @@ export default {
     height: 100%;
     min-height: 140px;
     cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+      box-shadow: 0px 0px 4px 4px #f1f1f1;
+    }
     &.add {
       background-color: #F3F4F6;
       

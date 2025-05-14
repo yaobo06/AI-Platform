@@ -76,7 +76,8 @@
         <div class="card edit" @click.stop="goTo(item)">
           <div class="content">
             <div class="img">
-              <svg-icon icon-class="documentation" />
+              <svg-icon v-if="!item.cover" icon-class="documentation" />
+              <img v-else :src="item.cover" alt="" />
             </div>
             <div class="context">
               <div class="title">{{ item.name }}</div>
@@ -164,6 +165,9 @@
               :value="item.id + ''">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="知识库图标" prop="cover">
+          <ImageUpload v-model="form.cover" :limit="1"/>
         </el-form-item>
         <el-form-item label="链接地址" prop="knowledgeUrl" required :rules="[{required: true, message: '请输入链接地址', trigger: 'blur'}, {validator: (rule, value, callback) => {
           /^http/.test(value) ? callback() : callback('请输入http链接地址');
@@ -291,7 +295,12 @@ export default {
     getList() {
       this.loading = true;
       listKnowledge(this.queryParams).then(response => {
-        this.knowledgeList = response.rows;
+        this.knowledgeList = response.rows.map(item => {
+          return {
+            ...item,
+            src: `${process.env.VUE_APP_BASE_API}${item.cover}`
+          }
+        });
         this.total = response.total;
         this.loading = false;
       });
@@ -399,6 +408,10 @@ export default {
     box-sizing: border-box;
     height: 140px;
     cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+      box-shadow: 0px 0px 4px 4px #f1f1f1;
+    }
     &.add {
       background-color: #F3F4F6;
       
