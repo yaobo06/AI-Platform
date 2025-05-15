@@ -1,35 +1,34 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="事件名称" prop="eventName">
+      <el-form-item label="名字" prop="name">
         <el-input
-          v-model="queryParams.eventName"
-          placeholder="请输入事件名称"
+          v-model="queryParams.name"
+          placeholder="请输入名字"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="事件类型" prop="eventCategory">
+      <el-form-item label="员工工号" prop="number">
         <el-input
-          v-model="queryParams.eventCategory"
-          placeholder="请输入事件类型"
+          v-model="queryParams.number"
+          placeholder="请输入员工工号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="接收人" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入接收人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="状态" prop="status">
+        <el-select clearable v-model="queryParams.status" placeholder="请选择状态"
+          @keyup.enter.native="handleQuery" style="width:100%">
+					<el-option v-for="(item,index) of statusList" :key="index" :label="item.value" :value="String(item.key)">{{item.value}}</el-option>
+				</el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
+
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -38,7 +37,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['platform:userevent:add']"
+          v-hasPermi="['platform:user:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -49,7 +48,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['platform:userevent:edit']"
+          v-hasPermi="['platform:user:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -60,7 +59,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['platform:userevent:remove']"
+          v-hasPermi="['platform:user:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -70,20 +69,26 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['platform:userevent:export']"
+          v-hasPermi="['platform:user:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="eventList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="事件名称" align="center" prop="eventName" />
-      <el-table-column label="事件类型" align="center" prop="eventCategory" />
-      <el-table-column label="地点" align="center" prop="location" />
-      <el-table-column label="接收人" align="center" prop="userId" />
-      <el-table-column label="升级人" align="center" prop="upgraderId" />
-      <el-table-column label="备注" align="center" prop="extendsInfo" />
+      <el-table-column label="人员" align="center" prop="name" />
+      <el-table-column label="工号" align="center" prop="number" />
+      <el-table-column label="状态" align="center" prop="status" >
+        <template slot-scope="scope">
+          <span>{{ getStatusText(scope.row.status) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" prop="creationDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -91,19 +96,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['platform:userevent:edit']"
+            v-hasPermi="['platform:user:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['platform:userevent:remove']"
+            v-hasPermi="['platform:user:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -112,32 +117,22 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改海康事件用户关联对话框 -->
+    <!-- 添加或修改海康用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="钉钉工号" prop="employId">
           <el-input v-model="form.employId" placeholder="请输入钉钉工号" />
         </el-form-item>
-        <el-form-item label="用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户id" />
+        <el-form-item label="名字" prop="name">
+          <el-input v-model="form.name" placeholder="请输入员工名字" />
         </el-form-item>
-        <el-form-item label="是否需要发送钉钉消息" prop="ifSendTalkMsg">
-          <el-input v-model="form.ifSendTalkMsg" placeholder="请输入是否需要发送订单消息：1-是，0-否" />
+        <el-form-item label="工号" prop="number">
+          <el-input v-model="form.number" placeholder="请输入工号" />
         </el-form-item>
-        <el-form-item label="是否需要发送工作通知" prop="ifSendWorkNotice">
-          <el-input v-model="form.ifSendWorkNotice" placeholder="请输入是否需要发送工作通知：1-是，0-否" />
-        </el-form-item>
-        <el-form-item label="事件名称" prop="eventName">
-          <el-input v-model="form.eventName" placeholder="请输入事件名称" />
-        </el-form-item>
-        <el-form-item label="扩展信息" prop="extendsInfo">
-          <el-input v-model="form.extendsInfo" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="创建人" prop="createdBy">
-          <el-input v-model="form.createdBy" placeholder="请输入创建人" />
-        </el-form-item>
-        <el-form-item label="修改人" prop="lastUpdatedBy">
-          <el-input v-model="form.lastUpdatedBy" placeholder="请输入修改人" />
+        <el-form-item label="状态" prop="status">
+          <el-select clearable v-model="form.status" placeholder="请选择状态" style="width:100%">
+            <el-option v-for="(item,index) of statusList" :key="index" :label="item.value" :value="String(item.key)">{{item.value}}</el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -149,10 +144,10 @@
 </template>
 
 <script>
-import { listEvent, getEvent, delEvent, addEvent, updateEvent } from "@/api/platform/userevent";
+import { listUser, getUser, delUser, addUser, updateUser } from "@/api/platform/user";
 
 export default {
-  name: "Event",
+  name: "User",
   data() {
     return {
       // 遮罩层
@@ -167,28 +162,32 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 海康事件用户关联表格数据
-      eventList: [],
+      // 海康用户表格数据
+      userList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      statusList: [{
+        key: 'enable',
+        value: '启用'
+      },{
+        key: 'disable',
+        value: '禁用'
+      }],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
         employId: null,
-        userId: null,
-        ifSendTalkMsg: null,
-        ifSendWorkNotice: null,
-        eventType: null,
-        eventName: null,
-        extendsInfo: null,
+        name: null,
+        number: null,
+        status: null,
+        superiorId: null,
         createdBy: null,
         creationDate: null,
         lastUpdatedBy: null,
-        lastUpdateDate: null,
-        deleteFlag: null
+        lastUpdateDate: null
       },
       // 表单参数
       form: {},
@@ -201,11 +200,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询海康事件用户关联列表 */
+    /** 查询海康用户列表 */
     getList() {
       this.loading = true;
-      listEvent(this.queryParams).then(response => {
-        this.eventList = response.rows;
+      listUser(this.queryParams).then(response => {
+        this.userList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -220,17 +219,14 @@ export default {
       this.form = {
         id: null,
         employId: null,
-        userId: null,
-        ifSendTalkMsg: null,
-        ifSendWorkNotice: null,
-        eventType: null,
-        eventName: null,
-        extendsInfo: null,
+        name: null,
+        number: null,
+        status: null,
+        superiorId: null,
         createdBy: null,
         creationDate: null,
         lastUpdatedBy: null,
-        lastUpdateDate: null,
-        deleteFlag: null
+        lastUpdateDate: null
       };
       this.resetForm("form");
     },
@@ -254,16 +250,17 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加海康事件用户关联";
+      this.form.status = 'enable'
+      this.title = "添加海康用户";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getEvent(id).then(response => {
-        this.form = response.data;
+      getUser(id).then(response => {
+        this.form = response.data || {};
         this.open = true;
-        this.title = "修改海康事件用户关联";
+        this.title = "修改海康用户";
       });
     },
     /** 提交按钮 */
@@ -271,13 +268,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateEvent(this.form).then(response => {
+            updateUser(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addEvent(this.form).then(response => {
+            addUser(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -289,8 +286,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除海康事件用户关联编号为"' + ids + '"的数据项？').then(function() {
-        return delEvent(ids);
+      this.$modal.confirm('是否确认删除海康用户编号为"' + ids + '"的数据项？').then(function() {
+        return delUser(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -298,9 +295,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/event/export', {
+      this.download('platform/user/export', {
         ...this.queryParams
-      }, `event_${new Date().getTime()}.xlsx`)
+      }, `user_${new Date().getTime()}.xlsx`)
+    },
+    getStatusText(status) {
+      let statusItem = this.statusList.filter(item => item.key == status)[0] || {}
+      return statusItem.value
     }
   }
 };
