@@ -62,7 +62,7 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row> -->
-    <el-row :gutter="10" class="mb8" type="flex">
+    <el-row :gutter="10" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
         <div class="card add" @click="handleAdd">
           <div class="title">创建知识库</div>
@@ -401,6 +401,12 @@ export default {
 
 <style lang="scss" scoped>
 .app-container {
+  .list {
+    flex-wrap: wrap;
+    .el-col {
+      margin-top: 10px;
+    }
+  }
   .card {
     border: 1px solid #DCDFE6;
     border-radius: 8px;

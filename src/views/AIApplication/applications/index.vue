@@ -46,7 +46,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form> -->
-    <el-row :gutter="10" class="mb8" type="flex">
+    <el-row :gutter="10" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
         <div class="card add" @click="handleAdd">
           <div class="title">创建应用</div>
@@ -406,6 +406,12 @@ export default {
 </script>
 <style lang="scss" scoped>
 .app-container {
+  .list {
+    flex-wrap: wrap;
+    .el-col {
+      margin-top: 10px;
+    }
+  }
   .card {
     border: 1px solid #DCDFE6;
     border-radius: 8px;
@@ -415,6 +421,7 @@ export default {
     min-height: 140px;
     cursor: pointer;
     transition: all 0.3s;
+    
     &:hover {
       box-shadow: 0px 0px 4px 4px #f1f1f1;
     }
