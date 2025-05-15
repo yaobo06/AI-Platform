@@ -61,7 +61,7 @@
           <div class="content">
             <div class="img">
               <svg-icon v-if="!item.cover" icon-class="documentation" />
-              <img v-else :src="item.cover" alt="" />
+              <img v-else :src="item.src" alt="" />
             </div>
             <div class="context">
               <div class="title">{{ item.name }}</div>
