@@ -9,9 +9,9 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="员工工号" prop="number">
+      <el-form-item label="员工工号" prop="userId">
         <el-input
-          v-model="queryParams.number"
+          v-model="queryParams.userId"
           placeholder="请输入员工工号"
           clearable
           @keyup.enter.native="handleQuery"
@@ -84,6 +84,8 @@
           <span>{{ getStatusText(scope.row.status) }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="上级工号" align="center" prop="superiorUserId" />
+      <el-table-column label="上级名字" align="center" prop="superiorName" />
       <el-table-column label="创建时间" align="center" prop="creationDate" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}') }}</span>
@@ -126,9 +128,12 @@
         <el-form-item label="名字" prop="name">
           <el-input v-model="form.name" placeholder="请输入员工名字" />
         </el-form-item>
-        <el-form-item label="工号" prop="number">
-          <el-input v-model="form.number" placeholder="请输入工号" />
+        <el-form-item label="工号" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入工号" />
         </el-form-item>
+        <el-table-column label="上级ID" align="center" prop="superiorUserId" />
+        <el-table-column label="上级名字" align="center" prop="superiorName" />
+        <el-table-column label="上级钉钉ID" align="center" prop="superiorEmpolyId" />
         <el-form-item label="状态" prop="status">
           <el-select clearable v-model="form.status" placeholder="请选择状态" style="width:100%">
             <el-option v-for="(item,index) of statusList" :key="index" :label="item.value" :value="String(item.key)">{{item.value}}</el-option>
@@ -181,7 +186,7 @@ export default {
         pageSize: 10,
         employId: null,
         name: null,
-        number: null,
+        userId: null,
         status: null,
         superiorId: null,
         createdBy: null,
@@ -220,7 +225,7 @@ export default {
         id: null,
         employId: null,
         name: null,
-        number: null,
+        userId: null,
         status: null,
         superiorId: null,
         createdBy: null,
