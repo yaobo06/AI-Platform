@@ -98,15 +98,15 @@
           <img v-if="scope.row.imgUrl" :src="scope.row.imgUrl" alt="" width=25 height=25 @click="showBigImg(scope.row.imgUrl)">
         </template>
       </el-table-column>
-      <el-table-column label="类型" align="center" prop="eventType" />
+<!--      <el-table-column label="类型" align="center" prop="eventType" />-->
+      <el-table-column label="分类" align="center" prop="eventCategory" />
       <el-table-column label="检测时间" align="center" prop="creationDate" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center" prop="eventAddr"/>
-      <el-table-column label="分类" align="center" prop="category" />
-      <el-table-column label="推送人" align="center" prop="workNoticeUser" />
+      <el-table-column label="推送人" align="center" prop="reciverUserIds" />
       <el-table-column label="处理状态" align="center" prop="statusCode">
         <template slot-scope="scope">
           <span>{{ getStatusText(scope.row.statusCode) }}</span>
