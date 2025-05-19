@@ -80,7 +80,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="事件名称" align="center" prop="eventName" />
       <el-table-column label="事件类型" align="center" prop="eventCategory" />
-      <el-table-column label="地点" align="center" prop="location" />
+      <el-table-column label="地点" align="center" prop="eventAddr" />
       <el-table-column label="接收人" align="center" prop="userId" />
       <el-table-column label="升级人" align="center" prop="upgraderId" />
       <el-table-column label="备注" align="center" prop="extendsInfo" />
@@ -129,6 +129,12 @@
         </el-form-item>
         <el-form-item label="事件名称" prop="eventName">
           <el-input v-model="form.eventName" placeholder="请输入事件名称" />
+        </el-form-item>
+        <el-form-item label="事件类型" prop="eventCategory">
+          <el-input v-model="form.eventCategory" placeholder="请输入事件名称" />
+        </el-form-item>
+        <el-form-item label="事件地址" prop="eventAddr">
+          <el-input v-model="form.eventAddr" placeholder="请输入事件地址" />
         </el-form-item>
         <el-form-item label="扩展信息" prop="extendsInfo">
           <el-input v-model="form.extendsInfo" type="textarea" placeholder="请输入内容" />

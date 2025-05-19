@@ -9,10 +9,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建人" prop="createdBy">
+      <el-form-item label="事件类型" prop="eventCategory">
         <el-input
-          v-model="queryParams.createdBy"
-          placeholder="请输入创建人"
+          v-model="queryParams.eventCategory"
+          placeholder="请输入事件类型"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -23,22 +23,6 @@
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="请选择创建时间">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="修改人" prop="lastUpdatedBy">
-        <el-input
-          v-model="queryParams.lastUpdatedBy"
-          placeholder="请输入修改人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="最后修改时间" prop="lastUpdateDate">
-        <el-date-picker clearable
-          v-model="queryParams.lastUpdateDate"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择最后修改时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -96,16 +80,16 @@
     <el-table v-loading="loading" :data="eventList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="类型" align="center" prop="type" />
+      <el-table-column label="类型编码" align="center" prop="type" />
       <el-table-column label="事件名称" align="center" prop="eventName" />
-      <el-table-column label="扩展信息" align="center" prop="extendsInfo" />
-      <el-table-column label="创建人" align="center" prop="createdBy" />
+      <el-table-column label="事件类型" align="center" prop="eventCategory" />
+      <el-table-column label="事件地址" align="center" prop="eventAddr" />
       <el-table-column label="创建时间" align="center" prop="creationDate" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="修改人" align="center" prop="lastUpdatedBy" />
+<!--      <el-table-column label="修改人" align="center" prop="lastUpdatedBy" />-->
       <el-table-column label="最后修改时间" align="center" prop="lastUpdateDate" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.lastUpdateDate, '{y}-{m}-{d}') }}</span>
@@ -144,6 +128,12 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="事件名称" prop="eventName">
           <el-input v-model="form.eventName" placeholder="请输入事件名称" />
+        </el-form-item>
+        <el-form-item label="事件类型" prop="eventCategory">
+          <el-input v-model="form.eventCategory" placeholder="请输入事件名称" />
+        </el-form-item>
+        <el-form-item label="事件地址" prop="eventAddr">
+          <el-input v-model="form.eventAddr" placeholder="请输入事件地址" />
         </el-form-item>
         <el-form-item label="扩展信息" prop="extendsInfo">
           <el-input v-model="form.extendsInfo" type="textarea" placeholder="请输入内容" />
