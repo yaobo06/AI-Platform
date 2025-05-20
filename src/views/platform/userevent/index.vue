@@ -130,6 +130,9 @@
         <el-form-item label="事件名称" prop="eventName">
           <el-input v-model="form.eventName" placeholder="请输入事件名称" />
         </el-form-item>
+        <el-form-item label="事件编码" prop="eventType">
+          <el-input v-model="form.eventType" placeholder="事件编码" />
+        </el-form-item>
         <el-form-item label="事件类型" prop="eventCategory">
           <el-input v-model="form.eventCategory" placeholder="请输入事件名称" />
         </el-form-item>
