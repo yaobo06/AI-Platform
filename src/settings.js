@@ -27,7 +27,7 @@ module.exports = {
   /**
    * 是否显示logo
    */
-  sidebarLogo: false,
+  sidebarLogo: true,
 
   /**
    * 是否显示动态标题
