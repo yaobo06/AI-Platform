@@ -443,7 +443,9 @@ export default {
       display: flex;
       flex-direction: column;
       .content {
-        flex: 1;
+        flex-grow: 1;
+        // width: 0px;
+        width: 100%;
         display: flex;
         .img {
           width: 70px;
@@ -455,19 +457,23 @@ export default {
           align-items: center;
           background-color: #DBEAFE;
           border-radius: 8px;
+          overflow: hidden;
           img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
           }
         }
         .context {
           margin-left: 14px;
-          flex: 1;
+          flex-grow: 1;
+          width: 0px;
           .title {
             font-size: 16px;
             color: #374151;
             font-weight: bold;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           .desc {
             margin-top: 8px;

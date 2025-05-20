@@ -436,7 +436,9 @@ export default {
       display: flex;
       flex-direction: column;
       .content {
-        flex: 1;
+        flex-grow: 1;
+        // width: 0px;
+        width: 100%;
         display: flex;
         .img {
           width: 70px;
@@ -448,18 +450,33 @@ export default {
           align-items: center;
           background-color: #DBEAFE;
           border-radius: 8px;
+          overflow: hidden;
+          img {
+            width: 100%;
+            height: 100%;
+          }
         }
         .context {
           margin-left: 14px;
+          flex-grow: 1;
+          width: 0px;
           .title {
             font-size: 16px;
             color: #374151;
             font-weight: bold;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           .desc {
             margin-top: 8px;
             font-size: 14px;
             color: #6B7280;
+            display: -webkit-box; /* 将对象作为弹性伸缩盒子模型显示 */
+            -webkit-box-orient: vertical; /* 设置或检索伸缩盒对象的子元素的排列方式 */
+            -webkit-line-clamp: 3; /* 限制显示的文本行数 */
+            overflow: hidden; /* 隐藏超出的内容 */
+            text-overflow: ellipsis; /* 使用省略号表示被修剪的文本 */
           }
         }
       }
