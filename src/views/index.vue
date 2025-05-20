@@ -12,17 +12,18 @@
       </div>
     </div>
     <div class="home-middle">
-      <div class="home-middle-item" v-for="item in 5">
+      <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index">
         <div class="home-middle-item-left">
-          <div class="home-middle-item-title">
-            DeepSeek-R1
+          <div class="home-middle-item-title" :title="item.name">
+            {{item.name}}
           </div>
-          <div class="home-middle-item-context">
-            随时随地 问问小艺
+          <div class="home-middle-item-context" :title="item.des">
+            {{item.des}}
           </div>
         </div>
-        <div class="home-middle-item-right">
-          <img src="../assets/images/deepseek-icon.png">
+        <div class="home-middle-item-right" v-if="item.src">
+          <svg-icon v-if="!item.cover" icon-class="documentation" />
+          <img v-else :src="item.src" alt="" />
         </div>
       </div>
     </div>
@@ -37,29 +38,22 @@
           </div>
         </div>
         <div class="function-pannel-type">
-          <div class="function-pannel-type-label active-label">热门</div>
-          <div class="function-pannel-type-label">最新</div>
-          <div class="function-pannel-type-label">职场</div>
-          <div class="function-pannel-type-label">创作</div>
-          <div class="function-pannel-type-label">编程</div>
-          <div class="function-pannel-type-label">绘画</div>
-          <div class="function-pannel-type-label">学习</div>
-          <div class="function-pannel-type-label">招聘</div>
-          <div class="function-pannel-type-label">娱乐</div>
+          <div v-for="(item, index) in applicationTypes" :key="index">
+            <div v-if="item.section == 'buttom'"  
+             :class="getTypeClass(item.key)" @click="selectType(item.key)">{{item.label}}</div>
+           </div>
         </div>
         <div class="function-pannel-content">
-          <div class="pannel-item-row" v-for="item in 3">
-            <div class="pannel-item" v-for="item in 4">
+          <div class="pannel-item-row" v-for="(applicationRow, index) in applicationList" :key="index">
+            <div class="pannel-item" v-for="(application, num) in applicationRow" :key="num">
               <div class="pannel-item-left">
-                <img src="../assets/images/content-icon.png">
+                <svg-icon v-if="!application.cover" icon-class="documentation" />
+                <img v-else :src="application.src" alt="" />
               </div>
               <div class="pannel-item-right">
-                <div class="pannel-item-title">文案大师</div>
-                <div class="pannel-item-content">
-                  <img src="../assets/images/flame.png">
-                  17.3万 | 为你解答各种编辑问题
-                </div>
-                <div class="pannel-item-content">@讯飞星火</div>
+                <div class="pannel-item-title" :title="application.name" >{{application.name}}</div>
+                <div class="pannel-item-content" :title="application.des" v-if="application.des"><img src="../assets/images/flame.png">
+                <span>&nbsp;{{application.des}}s</span></div>
               </div>
             </div>
           </div>
@@ -72,17 +66,146 @@
 </template>
 
 <script>
+import { listApp, getModels} from "@/views/AIApplication/applications/app";
 export default {
   name: "Index",
   data() {
     return {
       // 版本号
-      version: "3.8.9"
+      version: "3.8.9",
+      applicationList: [],
+      applicationNav: [],
+      total: 0,
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        modelId: null,
+        knowledgeIds: null,
+        cover: null,
+        name: null,
+        prompt: null,
+        des: null,
+        saveTime: null,
+        type: null
+      },
+
+      rowNum: 4,
+      applicationTypes: [{
+        key: '0',
+        label: '轮播',
+        section: 'top'
+      },{
+        key: '1',
+        label: '导航栏',
+        section: 'mid'
+      },{
+        key: '2',
+        label: '热门',
+        section: 'buttom'
+      },{
+        key: '3',
+        label: '最新',
+        section: 'buttom'
+      },{
+        key: '4',
+        label: '职场',
+        section: 'buttom'
+      },{
+        key: '5',
+        label: '创作',
+        section: 'buttom'
+      },{
+        key: '6',
+        label: '编程',
+        section: 'buttom'
+      },{
+        key: '7',
+        label: '绘画',
+        section: 'buttom'
+      },{
+        key: '8',
+        label: '学习',
+        section: 'buttom'
+      },{
+        key: '9',
+        label: '招聘',
+        section: 'buttom'
+      },{
+        key: '10',
+        label: '娱乐',
+        section: 'buttom'
+      }],
+      activeType: '2'
     };
+  },
+  created() {
+    this.getList()
+    this.getApplicationNav()
   },
   methods: {
     goTarget(href) {
       window.open(href, "_blank");
+    },
+    selectType(key){
+      this.activeType = key
+      this.getList()
+    },
+    getTypeClass(key){
+      if(key == this.activeType){
+        return 'function-pannel-type-label active-label'
+      }
+      return 'function-pannel-type-label'
+    },
+    /** 查询海康用户列表 */
+    getList() {
+      this.queryParams.type = this.activeType
+      listApp(this.queryParams).then(response => {
+        this.total = response.total;
+        this.applicationList = this.formatResult(response.rows)
+      });
+    },
+    getApplicationNav(){
+      this.queryParams.type = '1'
+      listApp(this.queryParams).then(response => {
+        this.total = response.total;
+        let responseData = response.rows || []
+        let length = responseData.length
+        this.applicationNav = []
+        for(let i = 0; i < 5; i++){
+          if(i < length ){
+            this.appendIconSrc(responseData[i])
+            this.applicationNav.push(responseData[i])
+          }else{
+            this.applicationNav.push([])
+          }
+        }
+      });
+    },
+    appendIconSrc(element){
+      Object.assign(element, {
+        //'src': process.env.VUE_APP_BASE_API + element.cover
+        'src': 'http://192.168.16.67/prod-api' + element.cover
+      })
+    },
+    formatResult(responseData){
+      if(!responseData || responseData.length == 0){
+          return []
+      }
+      let applicationGrid = []
+      let applicationRow = []
+      responseData.forEach(element => {
+        this.appendIconSrc(element)
+        if(applicationRow.length == this.rowNum){
+          applicationGrid.push([...applicationRow])
+          applicationRow = []
+        }
+        applicationRow.push(element)
+      });
+      if(applicationRow.length > 0){
+        applicationGrid.push([...applicationRow])
+      }
+      return applicationGrid
     }
   }
 };
@@ -147,11 +270,21 @@ export default {
   padding-right: 12px;
 }
 
+.home-middle-item-right img{
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
 .home-middle-item-title{
   font-size: 18px;
   font-weight: 700;
   height: 50%;
-  padding-top: 14px;
+  width: 100%;
+  padding-top: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .home-middle-item-context{
@@ -160,6 +293,10 @@ export default {
   height: 50%;
   color: #999999;
   margin-top: 5px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .home-bottom{
@@ -256,6 +393,13 @@ export default {
   align-items: center; /* 垂直居中 */
   justify-content: center; /* 水平居中，如果需要的话 */
 }
+
+.pannel-item-left img{
+  height: 55px;
+  width: 55px;
+  border-radius: 12px;
+}
+
 .pannel-item-right{
   width: calc(100% - 80px);
   height:  100%;
@@ -270,10 +414,14 @@ export default {
   font-size: 14px;
   color: #939393;
   margin-top: 2px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .pannel-item-content img{
-  margin-top: 2px;
+  margin-top: 1px;
 }
 </style>
 
