@@ -21,7 +21,7 @@
             {{item.des}}
           </div>
         </div>
-        <div class="home-middle-item-right">
+        <div class="home-middle-item-right" v-if="item.src">
           <svg-icon v-if="!item.cover" icon-class="documentation" />
           <img v-else :src="item.src" alt="" />
         </div>
