@@ -358,7 +358,9 @@ export default {
       display: flex;
       flex-direction: column;
       .content {
-        flex: 1;
+        flex-grow: 1;
+        // width: 0px;
+        width: 100%;
         display: flex;
         padding: 16px 2px 0px 2px;
         .img {
@@ -371,19 +373,23 @@ export default {
           align-items: center;
           background-color: #DBEAFE;
           border-radius: 8px;
+          overflow: hidden;
           img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
           }
         }
         .context {
           margin-left: 14px;
-          flex: 1;
+          flex-grow: 1;
+          width: 0px;
           .title {
             font-size: 16px;
             color: #4a4a4a;
             font-weight: bold;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           .desc {
             margin-top: 8px;
