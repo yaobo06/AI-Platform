@@ -175,7 +175,8 @@ export default {
         this.appList = response.rows.map(item => {
           return {
             ...item,
-            src: `${process.env.VUE_APP_BASE_API}${item.cover}`
+            //src: `${process.env.VUE_APP_BASE_API}${item.cover}`
+            src: `http://192.168.16.67/prod-api${item.cover}`
           }
         });
         console.log(888, this.appList)
@@ -226,7 +227,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "新增/编辑";
+      this.title = "新增";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -235,7 +236,7 @@ export default {
       getApp(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改提示词";
+        this.title = "编辑";
       });
     },
     /** 提交按钮 */
@@ -293,6 +294,14 @@ export default {
   background: #ffffff;
 }
 .app-dialog ::v-deep .el-upload--picture-card{
+  width: 60px;
+  height: 60px;
+  line-height: 65px;
+  background-color: #f6f6f6;
+  border: 1px dashed #eeeeee;
+  vertical-align: middle;
+}
+.app-dialog ::v-deep .el-upload-list--picture-card .el-upload-list__item{
   width: 60px;
   height: 60px;
   line-height: 65px;
