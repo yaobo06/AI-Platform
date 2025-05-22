@@ -215,8 +215,7 @@ export default {
     },
     appendIconSrc(element){
       Object.assign(element, {
-        //'src': process.env.VUE_APP_BASE_API + element.cover
-        src: `http://192.168.16.67/prod-api${element.cover}`
+        'src': process.env.VUE_APP_BASE_API + element.cover
       })
     },
     formatResult(responseData){
@@ -283,7 +282,7 @@ export default {
   width: 30%; /* 根据需要调整宽度 */
   margin-right: 10px; /* 项之间的间隔 */
 }
-
+ 
 .home-top-item{
   height: 100%;
   width: calc(33% - 25px);
