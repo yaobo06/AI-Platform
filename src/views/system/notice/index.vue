@@ -100,6 +100,13 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
+            @click="handlePush(scope.row)"
+            v-hasPermi="['system:notice:edit']"
+          >推送钉钉</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:notice:edit']"
           >修改</el-button>
@@ -159,6 +166,25 @@
               <editor v-model="form.noticeContent" :min-height="192"/>
             </el-form-item>
           </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="图片url" prop="imgUrl">
+              <el-input v-model="form.imgUrl" placeholder="请输入图片url" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="访问链接" prop="visitUrl">
+              <el-input v-model="form.visitUrl" placeholder="请输入访问链接" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-form-item label="通知用户" prop="useridList">
+              <el-input v-model="form.useridList" :min-height="692"/>
+            </el-form-item>
+          </el-col>
+
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -170,7 +196,7 @@
 </template>
 
 <script>
-import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
+import { listNotice, getNotice, delNotice, addNotice, updateNotice, pushNotice } from '@/api/system/notice'
 
 export default {
   name: "Notice",
@@ -306,7 +332,19 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
+    },
+
+    /** 推送钉钉按钮操作 */
+    handlePush(row) {
+      const noticeIds = row.noticeId || this.ids
+      this.$modal.confirm('是否确认推送公告编号为"' + noticeIds + '"的数据项？').then(function() {
+        return pushNotice(noticeIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("已推送");
+      }).catch(() => {});
     }
+
   }
 };
 </script>
