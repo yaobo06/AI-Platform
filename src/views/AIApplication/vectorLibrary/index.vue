@@ -85,14 +85,14 @@
       <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mini"
+            size="mid"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:store:edit']"
           ></el-button>
           <el-button
-            size="mini"
+            size="mid"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"

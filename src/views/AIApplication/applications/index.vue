@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10" class="list mb8" type="flex" gutter="25">
+    <el-row :gutter="25" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" style="margin-top: 20px;">
         <div class="card add" @click="handleAdd">
           <div class="content">
