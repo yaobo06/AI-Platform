@@ -1,18 +1,19 @@
 <template>
   <div class="home-contianer">
     <div class="home-top">
-      <div  class="home-top-item">
-        <img src="../assets/images/deepseek-r1.png">
-      </div>
-      <div  class="home-top-item">
-        <img src="../assets/images/writting-assistant.png">
-      </div>
-      <div  class="home-top-item">
-        <img src="../assets/images/ernie-bot.png">
-      </div>
+      <!-- <div  class="home-top-item " v-for="item in cards" :key="item">
+        <img :src="item.imgUrl">
+      </div> -->
+     <el-carousel :interval="5000"  height="220px">
+        <el-carousel-item  v-for="(cards, index) in carousel" :key="index">
+          <div  class="home-top-item" v-for="(item, num) in cards" :key="num">
+            <img :src="item.imgUrl">
+          </div>
+        </el-carousel-item>
+      </el-carousel>
     </div>
     <div class="home-middle">
-      <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index">
+      <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index"  @click.stop="goTo(item)">
         <div class="home-middle-item-left">
           <div class="home-middle-item-title" :title="item.name">
             {{item.name}}
@@ -34,7 +35,7 @@
             <span>热门精选</span>
           </div>
           <div class="function-pannel-title-right">
-            <span>更多 &gt;</span>
+            <!-- <span>更多 &gt;</span> -->
           </div>
         </div>
         <div class="function-pannel-type">
@@ -45,7 +46,7 @@
         </div>
         <div class="function-pannel-content">
           <div class="pannel-item-row" v-for="(applicationRow, index) in applicationList" :key="index">
-            <div class="pannel-item" v-for="(application, num) in applicationRow" :key="num">
+            <div class="pannel-item" v-for="(application, num) in applicationRow" :key="num" @click.stop="goTo(application)">
               <div class="pannel-item-left">
                 <svg-icon v-if="!application.cover" icon-class="documentation" />
                 <img v-else :src="application.src" alt="" />
@@ -57,7 +58,6 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -89,7 +89,14 @@ export default {
         saveTime: null,
         type: null
       },
-
+      cards: [{
+        imgUrl: require('@/assets/images/deepseek-r1.png')
+      },{
+        imgUrl: require('@/assets/images/writting-assistant.png')
+      },{
+        imgUrl: require('@/assets/images/ernie-bot.png')
+      }],
+      carousel:[],
       rowNum: 4,
       applicationTypes: [{
         key: '0',
@@ -136,12 +143,15 @@ export default {
         label: '娱乐',
         section: 'buttom'
       }],
-      activeType: '2'
+      activeType: '2',
+      className: ''
     };
   },
   created() {
     this.getList()
     this.getApplicationNav()
+    this.getCarousel()
+
   },
   methods: {
     goTarget(href) {
@@ -150,6 +160,27 @@ export default {
     selectType(key){
       this.activeType = key
       this.getList()
+    },
+    getCarousel(){
+      let length = this.cards.length
+      this.carousel = []
+      this.cards.forEach((item, index)=> {
+        let carouselRow = []
+        carouselRow.push({...item})
+        let nextIndex = index + 1;
+        if(nextIndex < length - 1){
+          carouselRow.push({...this.cards[nextIndex]})
+          carouselRow.push({...this.cards[nextIndex + 1]})
+        }else if(nextIndex == length - 1){
+          carouselRow.push({...this.cards[nextIndex]})
+          carouselRow.push({...this.cards[0]})
+        }else if(nextIndex > length - 1){
+          carouselRow.push({...this.cards[0]})
+          carouselRow.push({...this.cards[1]})
+        }
+        this.carousel.push(carouselRow)
+      })
+      console.info(this.carousel)
     },
     getTypeClass(key){
       if(key == this.activeType){
@@ -184,7 +215,8 @@ export default {
     },
     appendIconSrc(element){
       Object.assign(element, {
-        'src': process.env.VUE_APP_BASE_API + element.cover
+        //'src': process.env.VUE_APP_BASE_API + element.cover
+        src: `http://192.168.16.67/prod-api${element.cover}`
       })
     },
     formatResult(responseData){
@@ -205,12 +237,28 @@ export default {
         applicationGrid.push([...applicationRow])
       }
       return applicationGrid
-    }
+    },
+    goTo({appUrl}) {
+      if(!appUrl) {
+        this.$modal.msgError('链接地址为空');
+        return;
+      }
+      window.open(appUrl);
+    },
   }
 };
 </script>
 
 <style scoped lang="scss">
+
+// .el-carousel__container {
+//   height: 100%; /* 确保容器高度 */
+// }
+// .el-carousel__item {
+//   width: 50%; /* 根据需要调整宽度 */
+//   display: inline-block; /* 使元素并排显示 */
+//   vertical-align: top; /* 垂直对齐 */
+// }
 .home-contianer{
   height: 100%;
   width: 100%;
@@ -220,6 +268,20 @@ export default {
 .home-top{
   height: 220px;
   width: 100%;
+}
+
+.carousel {
+  overflow: hidden; /* 隐藏溢出部分 */
+  white-space: nowrap; /* 防止子元素换行 */
+}
+.carousel-inner {
+  display: flex; /* 使用flex布局 */
+  transition: transform 0.5s ease; /* 平滑过渡效果 */
+}
+.carousel-item {
+  display: inline-block; /* 让项目横向排列 */
+  width: 30%; /* 根据需要调整宽度 */
+  margin-right: 10px; /* 项之间的间隔 */
 }
 
 .home-top-item{
@@ -250,6 +312,7 @@ export default {
   background: #fff;
   padding: 10px 5px;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .home-middle-item-left{
@@ -357,6 +420,7 @@ export default {
   float: left;
   margin-left: 12px;
   text-align: center;
+  cursor: pointer;
 }
 
 .function-pannel-type-label:first-of-type {
@@ -383,6 +447,7 @@ export default {
   width: 25%;
   height: 70px;
   float: left;
+  cursor: pointer;
 }
 .pannel-item-left{
   width: 80px;
