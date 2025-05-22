@@ -1,6 +1,6 @@
 <template>
   <!-- <div class="iframe-box">555</div> -->
-  <iframe class="iframe-box" src="http://192.168.16.75:3000/chat/share?shareId=5l9kbsry4igcaq5fyd1epxuy"></iframe>
+  <iframe class="iframe-box" src="https://dify.aitest.homa.cn/chat/bbo9ubrllwwB8Hzw"></iframe>
 </template>
 <style lang="scss" scoped>
 .iframe-box {
