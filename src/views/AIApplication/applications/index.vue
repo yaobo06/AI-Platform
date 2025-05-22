@@ -169,14 +169,12 @@ export default {
     },
     /** 查询提示词列表 */
     getList() {
-      // console.log(888,process.env.VUE_APP_BASE_API)
       this.loading = true;
       listApp(this.queryParams).then(response => {
         this.appList = response.rows.map(item => {
           return {
             ...item,
-            //src: `${process.env.VUE_APP_BASE_API}${item.cover}`
-            src: `http://192.168.16.67/prod-api${item.cover}`
+            src: `${process.env.VUE_APP_BASE_API}${item.cover}`
           }
         });
         console.log(888, this.appList)

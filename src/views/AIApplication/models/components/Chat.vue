@@ -17,16 +17,16 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-            v-hasPermi="['system:model:add']">新增</el-button>
+            v-hasPermi="['system:model:add']">新增模型</el-button>
         </el-col>
         <!-- <el-col :span="1.5">
           <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
             v-hasPermi="['system:model:edit']">修改</el-button>
         </el-col> -->
-        <el-col :span="1.5">
+        <!-- <el-col :span="1.5">
           <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
             v-hasPermi="['system:model:remove']">删除</el-button>
-        </el-col>
+        </el-col> -->
         <!-- <el-col :span="1.5">
           <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
             v-hasPermi="['system:model:export']">导出</el-button>
@@ -34,7 +34,7 @@
         <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
-      <el-table v-loading="loading" :data="modelList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="modelList" @selection-change="handleSelectionChange" border>
         <el-table-column type="selection" width="55" align="center" />
         <!-- <el-table-column label="主键" align="center" prop="id" />
         <el-table-column label="类型: CHAT、Embedding、Image" align="center" prop="type" /> -->
@@ -59,9 +59,9 @@
         <el-table-column label="操作" align="center" width="140" fixed="right" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:model:edit']">修改</el-button>
+              v-hasPermi="['system:model:edit']" title="修改"></el-button>
             <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-              v-hasPermi="['system:model:remove']">删除</el-button>
+              v-hasPermi="['system:model:remove']" title="删除"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -410,15 +410,14 @@ export default {
         text-align: left;
         margin: 4px 0px;
         cursor: pointer;
-        border-radius: 5px;
         transition: all 0.3s;
         &:hover {
           background-color: #f5f5f5;
         }
         &.active {
-          background-color: #e5f3ff;
           font-weight: bold;
-          color: #1890ff;
+          color: #f1883d;
+          border-left: 2px solid #f1883d;
         }
       }
     }

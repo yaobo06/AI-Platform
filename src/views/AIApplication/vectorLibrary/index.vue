@@ -85,17 +85,19 @@
       <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mid"
+            size="big"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
+            title="编辑"
             v-hasPermi="['system:store:edit']"
           ></el-button>
           <el-button
-            size="mid"
+            size="big"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
+            title="删除"
             v-hasPermi="['system:store:remove']"
           ></el-button>
         </template>
