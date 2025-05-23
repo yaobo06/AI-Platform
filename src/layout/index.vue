@@ -113,6 +113,13 @@ export default {
     background: #ea6111;
     border: #ea6111;
   }
+
+  .main-container ::v-deep .el-button--primary.is-plain{
+    color: #ec6c21;
+    background: #fdece2;
+    border: 1px solid #ed7732;
+  }
+
   .main-container ::v-deep td .el-icon-delete:before{
     color: #e76259;
   }
@@ -127,4 +134,30 @@ export default {
   .main-container ::v-deep td .el-button{
     font-size: 16px;
   }
+
+  .sidebar-container ::v-deep .el-menu .el-menu-item {
+    background: #212129 !important;
+    color: #ffffff !important;
+  }
+
+  .sidebar-container ::v-deep  .el-submenu__title{
+    background: #212129 !important;
+    color: #ffffff !important;
+  }
+
+ .sidebar-container ::v-deep .el-menu-item.is-active{
+    color: #ff5c00 !important;
+ }
+
+  .sidebar-container ::v-deep .submenu-title-noDropdown:hover{
+    color: #ff5c00 !important;
+ }
+
+  .sidebar-container ::v-deep .el-submenu__title:hover{
+    color: #ff5c00 !important;
+ }
+
+ .sidebar-container ::v-deep  .el-submenu .el-menu-item:hover{
+    color: #ff5c00 !important;
+ }
 </style>
