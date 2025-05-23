@@ -1,13 +1,10 @@
 <template>
   <div class="home-contianer">
     <div class="home-top">
-      <!-- <div  class="home-top-item " v-for="item in cards" :key="item">
-        <img :src="item.imgUrl">
-      </div> -->
      <el-carousel :interval="5000"  height="220px">
         <el-carousel-item  v-for="(cards, index) in carousel" :key="index">
-          <div  class="home-top-item" v-for="(item, num) in cards" :key="num">
-            <img :src="item.imgUrl">
+          <div  class="home-top-item" v-for="(item, num) in cards" :key="num" @click.stop="goTo(item)">
+            <img :src="item.src">
           </div>
         </el-carousel-item>
       </el-carousel>
@@ -150,7 +147,7 @@ export default {
   created() {
     this.getList()
     this.getApplicationNav()
-    this.getCarousel()
+    this.getApplicationTop()
 
   },
   methods: {
@@ -161,22 +158,22 @@ export default {
       this.activeType = key
       this.getList()
     },
-    getCarousel(){
-      let length = this.cards.length
+    getCarousel(cards){
+      let length = cards.length
       this.carousel = []
-      this.cards.forEach((item, index)=> {
+      cards.forEach((item, index)=> {
         let carouselRow = []
         carouselRow.push({...item})
         let nextIndex = index + 1;
         if(nextIndex < length - 1){
-          carouselRow.push({...this.cards[nextIndex]})
-          carouselRow.push({...this.cards[nextIndex + 1]})
+          carouselRow.push({...cards[nextIndex]})
+          carouselRow.push({...cards[nextIndex + 1]})
         }else if(nextIndex == length - 1){
-          carouselRow.push({...this.cards[nextIndex]})
-          carouselRow.push({...this.cards[0]})
+          carouselRow.push({...cards[nextIndex]})
+          carouselRow.push({...cards[0]})
         }else if(nextIndex > length - 1){
-          carouselRow.push({...this.cards[0]})
-          carouselRow.push({...this.cards[1]})
+          carouselRow.push({...cards[0]})
+          carouselRow.push({...cards[1]})
         }
         this.carousel.push(carouselRow)
       })
@@ -194,6 +191,16 @@ export default {
       listApp(this.queryParams).then(response => {
         this.total = response.total;
         this.applicationList = this.formatResult(response.rows)
+      });
+    },
+    getApplicationTop(){
+      this.queryParams.type = '0'
+      listApp(this.queryParams).then(response => {
+        let responseData = response.rows || []
+        responseData.forEach(item => {
+          this.appendIconSrc(item)
+        })
+        this.getCarousel(responseData)
       });
     },
     getApplicationNav(){

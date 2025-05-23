@@ -107,4 +107,15 @@ export default {
     }
   }
 }
+
+::v-deep .el-tabs__item.is-active{
+  color: #f1883d;
+}
+
+::v-deep .el-tabs__active-bar{
+  background-color: #f1883d;
+}
+::v-deep .el-tabs__item{
+  color: #383838;
+}
 </style>

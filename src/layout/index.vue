@@ -108,4 +108,23 @@ export default {
   .mobile .fixed-header {
     width: 100%;
   }
+
+  .main-container ::v-deep .el-button--primary{
+    background: #ea6111;
+    border: #ea6111;
+  }
+  .main-container ::v-deep td .el-icon-delete:before{
+    color: #e76259;
+  }
+  .main-container ::v-deep td .el-icon-delete + span{
+    color: #e76259;
+  }
+
+  .main-container ::v-deep td .el-button--text{
+    color: #413f40
+  }
+
+  .main-container ::v-deep td .el-button{
+    font-size: 16px;
+  }
 </style>

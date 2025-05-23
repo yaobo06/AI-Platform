@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10" class="list mb8" type="flex" gutter="25">
+    <el-row :gutter="25" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" style="margin-top: 20px;">
         <div class="card add" @click="handleAdd">
           <div class="content">
@@ -169,7 +169,6 @@ export default {
     },
     /** 查询提示词列表 */
     getList() {
-      // console.log(888,process.env.VUE_APP_BASE_API)
       this.loading = true;
       listApp(this.queryParams).then(response => {
         this.appList = response.rows.map(item => {
@@ -226,7 +225,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "新增/编辑";
+      this.title = "新增";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -235,7 +234,7 @@ export default {
       getApp(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改提示词";
+        this.title = "编辑";
       });
     },
     /** 提交按钮 */
@@ -293,6 +292,14 @@ export default {
   background: #ffffff;
 }
 .app-dialog ::v-deep .el-upload--picture-card{
+  width: 60px;
+  height: 60px;
+  line-height: 65px;
+  background-color: #f6f6f6;
+  border: 1px dashed #eeeeee;
+  vertical-align: middle;
+}
+.app-dialog ::v-deep .el-upload-list--picture-card .el-upload-list__item{
   width: 60px;
   height: 60px;
   line-height: 65px;

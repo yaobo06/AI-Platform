@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container  new-ui">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="数据库别名" prop="name">
         <el-input
@@ -22,7 +22,6 @@
               }">
                 <el-button
                   type="primary"
-                  plain
                   icon="el-icon-plus"
                   size="mini"
                 >新增向量数据库</el-button>
@@ -48,17 +47,16 @@
           v-hasPermi="['system:store:edit']"
         >修改</el-button>
       </el-col> -->
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="danger"
-          plain
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:store:remove']"
         >删除</el-button>
-      </el-col>
+      </el-col> -->
       <!-- <el-col :span="1.5">
         <el-button
           type="warning"
@@ -72,8 +70,8 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="storeList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" border :data="storeList" @selection-change="handleSelectionChange">
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
       <!-- <el-table-column label="主键" align="center" prop="id" /> -->
       <el-table-column label="数据库别名" align="center" prop="name" />
       <el-table-column label="供应商" align="center" prop="provider" />
@@ -87,19 +85,21 @@
       <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mini"
+            size="big"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
+            title="编辑"
             v-hasPermi="['system:store:edit']"
-          >修改</el-button>
+          ></el-button>
           <el-button
-            size="mini"
+            size="big"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
+            title="删除"
             v-hasPermi="['system:store:remove']"
-          >删除</el-button>
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>

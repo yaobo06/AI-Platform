@@ -85,7 +85,7 @@
           </div>
           <div class="footer">
             <div class="left">
-
+              
             </div>
             <div class="right" @click.stop>
               <el-dropdown trigger="click" @command="(methodName) => {
@@ -141,7 +141,7 @@
     />
 
     <!-- 添加或修改知识库对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" class="knowledge-dialog" :visible.sync="open" width="680px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="知识库名称" prop="name" required :rules="[{required: true, message: '请输入应用名称', trigger: 'blur'}]">
           <el-input v-model="form.name" type="text" maxlength="20" placeholder="请输入内容" />
@@ -414,6 +414,24 @@ export default {
 .app-page ::v-deep .el-pagination.is-background .btn-next{
   background: #ffffff;
 }
+
+.knowledge-dialog ::v-deep .el-upload--picture-card{
+  width: 60px;
+  height: 60px;
+  line-height: 65px;
+  background-color: #f6f6f6;
+  border: 1px dashed #eeeeee;
+  vertical-align: middle;
+}
+.knowledge-dialog ::v-deep .el-upload-list--picture-card .el-upload-list__item{
+  width: 60px;
+  height: 60px;
+  line-height: 65px;
+  background-color: #f6f6f6;
+  border: 1px dashed #eeeeee;
+  vertical-align: middle;
+}
+
 .app-container {
   background: #f4f4f4;
   width: 100%;
@@ -456,9 +474,7 @@ export default {
       display: flex;
       flex-direction: column;
       .content {
-        flex-grow: 1;
-        // width: 0px;
-        width: 100%;
+        flex: 1;
         display: flex;
         padding: 16px 2px 0px 2px;
         .img {
@@ -471,23 +487,13 @@ export default {
           align-items: center;
           background-color: #DBEAFE;
           border-radius: 8px;
-          overflow: hidden;
-          img {
-            width: 100%;
-            height: 100%;
-          }
         }
         .context {
           margin-left: 14px;
-          flex-grow: 1;
-          width: 0px;
           .title {
             font-size: 16px;
             color: #4a4a4a;
             font-weight: bold;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
           }
           .desc {
             margin-top: 8px;
