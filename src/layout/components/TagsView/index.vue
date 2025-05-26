@@ -235,23 +235,23 @@ export default {
 
 <style lang="scss" scoped>
 .tags-view-container {
-  height: 34px;
+  height: 45px;
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
+  background: #f4f4f4;
+  border-bottom: 0px solid #d8dce5;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
   .tags-view-wrapper {
     .tags-view-item {
       display: inline-block;
       position: relative;
       cursor: pointer;
-      height: 26px;
-      line-height: 26px;
-      border: 1px solid #d8dce5;
+      height: 35px;
+      line-height: 32px;
+      border: 0px solid #d8dce5;
       color: #495060;
       background: #fff;
       padding: 0 8px;
-      font-size: 12px;
+      font-size: 14px;
       margin-left: 5px;
       margin-top: 4px;
       &:first-of-type {
@@ -261,12 +261,12 @@ export default {
         margin-right: 15px;
       }
       &.active {
-        background-color: #42b983;
-        color: #fff;
-        border-color: #42b983;
+        background-color: #ffffff !important;
+        color: #f0802c !important;
+        border-color: #ffffff !important;
         &::before {
           content: '';
-          background: #fff;
+          background: #f0802c;
           display: inline-block;
           width: 8px;
           height: 8px;
@@ -276,6 +276,7 @@ export default {
         }
       }
     }
+    
   }
   .contextmenu {
     margin: 0;
@@ -298,6 +299,10 @@ export default {
       }
     }
   }
+}
+
+::v-deep .el-scrollbar__view{
+  margin-top: 8px;
 }
 </style>
 

@@ -1,9 +1,9 @@
 <template>
   <div class="home-contianer">
     <div class="home-top">
-     <el-carousel :interval="5000"  height="220px">
-        <el-carousel-item  v-for="(cards, index) in carousel" :key="index">
-          <div  class="home-top-item" v-for="(item, num) in cards" :key="num" @click.stop="goTo(item)">
+     <el-carousel :interval="5000"  height="220px"  type="card">
+        <el-carousel-item  v-for="(item, index) in topCards" :key="index">
+          <div  class="home-top-item" @click.stop="goTo(item)">
             <img :src="item.src">
           </div>
         </el-carousel-item>
@@ -86,6 +86,7 @@ export default {
         saveTime: null,
         type: null
       },
+      topCards:[],
       cards: [{
         imgUrl: require('@/assets/images/deepseek-r1.png')
       },{
@@ -148,7 +149,9 @@ export default {
     this.getList()
     this.getApplicationNav()
     this.getApplicationTop()
-
+  },
+  mounted(){
+   // this.getApplicationTop()
   },
   methods: {
     goTarget(href) {
@@ -200,7 +203,8 @@ export default {
         responseData.forEach(item => {
           this.appendIconSrc(item)
         })
-        this.getCarousel(responseData)
+        this.topCards = responseData
+        //this.getCarousel(responseData)
       });
     },
     getApplicationNav(){
@@ -268,12 +272,16 @@ export default {
 .home-contianer{
   height: 100%;
   width: 100%;
+  margin-top: 8px;
   background: #f5f5f5;
 }
 
 .home-top{
-  height: 220px;
-  width: 100%;
+  height: 225px;
+  width: calc(100% - 50px);
+  margin: 0px 15px 10px 25px;
+  background: #ffffff;
+  border-radius: 8px;
 }
 
 .carousel {
@@ -287,15 +295,11 @@ export default {
 .carousel-item {
   display: inline-block; /* 让项目横向排列 */
   width: 30%; /* 根据需要调整宽度 */
-  margin-right: 10px; /* 项之间的间隔 */
 }
  
 .home-top-item{
   height: 100%;
-  width: calc(33% - 25px);
-  float: left;
-  margin-left: 22px;
-
+  width: 100%;
 }
 
 .home-top-item img{
@@ -493,5 +497,9 @@ export default {
 .pannel-item-content img{
   margin-top: 1px;
 }
+::v-deep .el-carousel__indicators--outside{
+  display: none
+}
+
 </style>
 

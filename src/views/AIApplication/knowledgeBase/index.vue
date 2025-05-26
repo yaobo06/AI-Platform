@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container-box">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       
       <el-form-item label="知识库名称" prop="name" label-width="auto">
@@ -432,9 +432,10 @@ export default {
   vertical-align: middle;
 }
 
-.app-container {
+.app-container-box{
   background: #f4f4f4;
-  width: 100%;
+  margin: 10px 18px;
+  width: calc(100% - 36px);
   height: 100%;
   .list {
     flex-wrap: wrap;

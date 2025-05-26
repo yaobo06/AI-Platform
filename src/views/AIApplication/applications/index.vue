@@ -1,7 +1,7 @@
 <template>
-  <div class="app-container">
+  <div class="app-container-box">
     <el-row :gutter="25" class="list mb8" type="flex">
-      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" style="margin-top: 20px;">
+      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" style="margin-top: 10px; margin-bottom: 10px;">
         <div class="card add" @click="handleAdd">
           <div class="content">
             <svg-icon icon-class="edit" />
@@ -9,7 +9,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in appList" :key="item.id" style="margin-top: 20px;">
+      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in appList" :key="item.id" style="margin-top: 10px; margin-bottom: 10px;">
         <div class="card edit" @click.stop="goTo(item)">
           <div class="content">
             <div class="img">
@@ -321,10 +321,12 @@ export default {
   border: #ea6111;
 }
 
-.app-container {
+.app-container-box {
   background: #f4f4f4;
-  width: 100%;
+  margin: 10px 18px;
+  width: calc(100% - 36px);
   height: 100%;
+  padding-top: 0px;
   .list {
     flex-wrap: wrap;
     .el-col {
