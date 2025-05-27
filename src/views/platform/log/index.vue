@@ -102,7 +102,7 @@
       <el-table-column label="分类" align="center" prop="eventCategory" />
       <el-table-column label="检测时间" align="center" prop="creationDate" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}   {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center" prop="eventAddr"/>

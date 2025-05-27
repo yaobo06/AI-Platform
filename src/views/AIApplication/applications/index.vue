@@ -23,7 +23,6 @@
           </div>
           <div class="footer">
             <div class="left">
-
             </div>
             <div class="right" @click.stop>
               <el-dropdown trigger="click" @command="(methodName) => {
