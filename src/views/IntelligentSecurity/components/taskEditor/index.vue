@@ -13,13 +13,17 @@
     <el-dialog :title="title" :visible.sync="open" width="70vw" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="任务名称" prop="name">
-          <el-input readonly v-model="form.name" placeholder="请输入" />
+          <el-input v-model="form.name" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="监控点" prop="monitor">
           <el-input readonly :value="form.monitors ? form.monitors.map(({name}) => name).join('、') : ''" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
-          <el-input readonly v-model="form.startTime" placeholder="请输入" />
+          <el-date-picker
+            v-model="form.startTime"
+            type="datetime"
+            placeholder="选择日期时间">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="时间间隔" prop="timeInterval">
           <el-input placeholder="请输入" type="number" v-model="form.timeInterval" class="input-with-select">
