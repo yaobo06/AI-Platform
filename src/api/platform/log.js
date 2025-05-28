@@ -51,3 +51,22 @@ export function confirmLog(ids) {
     data: ids
   })
 }
+
+// 查询安防事件详情列表
+export function eventGroupLog(query) {
+  return request({
+    url: '/platform/log/eventGroup',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询安防事件详情列表
+export function addrGroupLog(query) {
+  return request({
+    url: '/platform/log/addrGroup',
+    method: 'get',
+    params: query
+  })
+}
+

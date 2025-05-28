@@ -1,18 +1,23 @@
 <template>
   <div class="home-contianer">
     <div class="home-middle">
-      <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index"  @click.stop="goTo(item)">
-        <div class="home-middle-item-left">
-          <div class="home-middle-item-title" :title="item.name">
-            {{item.name}}
+      <div class="home-middle-title">
+        <span>置顶应用</span>
+      </div>
+      <div class="home-middle-panel">
+        <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index"  @click.stop="goTo(item)">
+          <div class="home-middle-item-left">
+            <div class="home-middle-item-title" :title="item.name">
+              {{item.name}}
+            </div>
+            <div class="home-middle-item-context" :title="item.des">
+              {{item.des}}
+            </div>
           </div>
-          <div class="home-middle-item-context" :title="item.des">
-            {{item.des}}
+          <div class="home-middle-item-right" v-if="item.src">
+            <svg-icon v-if="!item.cover" icon-class="documentation" />
+            <img v-else :src="item.src" alt="" />
           </div>
-        </div>
-        <div class="home-middle-item-right" v-if="item.src">
-          <svg-icon v-if="!item.cover" icon-class="documentation" />
-          <img v-else :src="item.src" alt="" />
         </div>
       </div>
     </div>
@@ -145,7 +150,7 @@ export default {
         let responseData = response.rows || []
         let length = responseData.length
         this.applicationNav = []
-        for(let i = 0; i < 5; i++){
+        for(let i = 0; i < 4; i++){
           if(i < length ){
             this.appendIconSrc(responseData[i])
             this.applicationNav.push(responseData[i])
@@ -219,37 +224,39 @@ export default {
   display: inline-block; /* 让项目横向排列 */
   width: 30%; /* 根据需要调整宽度 */
 }
- 
-.home-top-item{
-  height: 100%;
-  width: calc(33% - 11px);
-  float: left;
-  margin-left: 22px;
-}
-
-.home-top .home-top-item:nth-child(1){
-  margin-left: 0px;
-}
-
-.home-top-item img{
-  height: 100%;
-  width: 100%;
-  border-radius: 8px;
-}
 
 .home-middle {
-  height: 80px;
-  width: calc(100% - 20px);
-  margin: 10px 15px 10px 10px;
+  height: 140px;
+  width: calc(100% - 50px);
+  margin-left: 25px;
+  margin-top: 16px;
+  border-radius: 8px;
+  background: #ffffff;
 }
+
+.home-middle-title{
+  font-size: 20px;
+  font-weight: 700;
+  height: 40px;
+  padding-top: 8px;
+  line-height: 36px;
+  width:  100%;
+  margin-left: 20px;
+}
+
+.home-middle-panel{
+  height: calc(100% - 40px);
+  width: 100%;
+}
+ 
 
 .home-middle-item{
   height: 100%;
   margin-left: 16px;
-  width: calc(20% - 19px);
+  width: calc(25% - 19px);
   float: left;
   background: #fff;
-  padding: 10px 5px;
+  padding: 2px 5px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -272,17 +279,17 @@ export default {
 }
 
 .home-middle-item-right img{
-  width: 30px;
-  height: 30px;
+  width: 50px;
+  height: 50px;
   border-radius: 8px;
 }
 
 .home-middle-item-title{
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  height: 50%;
+  height: 35%;
   width: 100%;
-  padding-top: 8px;
+  padding-top: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -291,19 +298,18 @@ export default {
 .home-middle-item-context{
   font-size: 12px;
   font-weight: 400;
-  height: 50%;
+  height: 60%;
   color: #999999;
-  margin-top: 5px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
 }
 
 .home-bottom{
-  height: calc(100% - 125px);
+  height: calc(100% - 205px);
   width: calc(100% - 50px);
-  margin: 10px 15px 10px 25px;
+  margin: 20px 15px 10px 25px;
 }
 
 .function-pannel{

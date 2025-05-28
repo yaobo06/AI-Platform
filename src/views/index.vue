@@ -15,46 +15,48 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="list mb8" type="flex">
-      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
-        <div class="card add" @click="handleAdd">
-          <div class="content">
-            <svg-icon icon-class="edit" />
-            创建空白模型
-          </div>
-        </div>
-      </el-col>
-      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in knowledgeList" :key="item.id">
-        <div class="card edit" @click.stop="goTo(item)">
-          <div class="content">
-            <div class="img">
-              <svg-icon v-if="!item.imageUrl" icon-class="documentation" />
-              <img v-else :src="item.src" alt="" style="height: 100%;width: 100%;"/>
-            </div>
-            <div class="context">
-              <div class="title">{{ item.name }}</div>
-              <div class="desc">{{ item.des }}</div>
+    <div class="model_panel">
+      <el-row :gutter="10" class="list mb8" type="flex">
+        <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
+          <div class="card add" @click="handleAdd">
+            <div class="content">
+              <svg-icon icon-class="edit" />
+              创建空白模型
             </div>
           </div>
-          <div class="footer">
-            <div class="left">
-              
+        </el-col>
+        <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in knowledgeList" :key="item.id">
+          <div class="card edit" @click.stop="goTo(item)">
+            <div class="content">
+              <div class="img">
+                <svg-icon v-if="!item.imageUrl" icon-class="documentation" />
+                <img v-else :src="item.src" alt="" style="height: 100%;width: 100%;"/>
+              </div>
+              <div class="context">
+                <div class="title">{{ item.name }}</div>
+                <div class="desc">{{ item.des }}</div>
+              </div>
             </div>
-            <div class="right" @click.stop>
-              <el-dropdown trigger="click" @command="(methodName) => {
-                handleCommand(methodName, item);
-              }">
-                <el-button class="more-btn" type="text" size="mini" icon="el-icon-more"></el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-edit" command="handleUpdate">编辑此模型</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-delete" command="handleDelete">删除此模型</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+            <div class="footer">
+              <div class="left">
+                
+              </div>
+              <div class="right" @click.stop>
+                <el-dropdown trigger="click" @command="(methodName) => {
+                  handleCommand(methodName, item);
+                }">
+                  <el-button class="more-btn" type="text" size="mini" icon="el-icon-more"></el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item icon="el-icon-edit" command="handleUpdate">编辑此模型</el-dropdown-item>
+                    <el-dropdown-item icon="el-icon-delete" command="handleDelete">删除此模型</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
             </div>
           </div>
-        </div>
-      </el-col>
-    </el-row>
+        </el-col>
+      </el-row>
+    </div>
     <pagination
       v-show="total>0"
       :total="total"
@@ -174,12 +176,12 @@ export default {
     this.modelsRemoteMethod();
   },
   methods: {
-    goTo({knowledgeUrl}) {
-      if(!knowledgeUrl) {
+    goTo({baseUrl}) {
+      if(!baseUrl) {
         this.$modal.msgError('链接地址为空');
         return;
       }
-      window.open(knowledgeUrl);
+      window.open(baseUrl);
     },
     // 获取向量模型
     modelsRemoteMethod(str, immediate = false) {
@@ -391,6 +393,15 @@ export default {
   font-size: 18px;
   color: #3d3d3d;
   font-weight: 700;
+}
+
+.home-contianer{
+  height: 100%;
+}
+
+.model_panel{
+  height: calc(100% - 180px);
+  width: 100%;
 }
 
 .app-container-box{
