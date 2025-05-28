@@ -78,7 +78,7 @@
     <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="人员" align="center" prop="name" />
-      <el-table-column label="工号" align="center" prop="number" />
+      <el-table-column label="工号" align="center" prop="userId" />
       <el-table-column label="状态" align="center" prop="status" >
         <template slot-scope="scope">
           <span>{{ getStatusText(scope.row.status) }}</span>
@@ -110,7 +110,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"

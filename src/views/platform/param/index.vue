@@ -57,12 +57,12 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="最后修改时间" prop="lastUpdateDate">
+      <el-form-item label="修改时间" prop="lastUpdateDate">
         <el-date-picker clearable
           v-model="queryParams.lastUpdateDate"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="请选择最后修改时间">
+          placeholder="请选择修改时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -95,17 +95,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['platform:paramconfig:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="warning"
           plain
           icon="el-icon-download"
@@ -116,10 +105,8 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
     <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
       <el-table-column label="参数组" align="center" prop="paramGroup" />
       <el-table-column label="参数键" align="center" prop="paramKey" />
       <el-table-column label="参数值" align="center" prop="paramValue" />
@@ -144,14 +131,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['platform:paramconfig:edit']"
-          >修改</el-button>
+            title="修改"
+          ></el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['platform:paramconfig:remove']"
-          >删除</el-button>
+            title="删除"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>

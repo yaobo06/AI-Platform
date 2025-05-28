@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container-box">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       
       <el-form-item label="知识库名称" prop="name" label-width="auto">
@@ -65,7 +65,6 @@
     <el-row :gutter="10" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
         <div class="card add" @click="handleAdd">
-          <div class="title">创建知识库</div>
           <div class="content">
             <svg-icon icon-class="edit" />
             创建空白知识库
@@ -86,7 +85,7 @@
           </div>
           <div class="footer">
             <div class="left">
-
+              
             </div>
             <div class="right" @click.stop>
               <el-dropdown trigger="click" @command="(methodName) => {
@@ -138,10 +137,11 @@
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
+      class="app-page"
     />
 
     <!-- 添加或修改知识库对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" class="knowledge-dialog" :visible.sync="open" width="680px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="知识库名称" prop="name" required :rules="[{required: true, message: '请输入应用名称', trigger: 'blur'}]">
           <el-input v-model="form.name" type="text" maxlength="20" placeholder="请输入内容" />
@@ -298,7 +298,7 @@ export default {
         this.knowledgeList = response.rows.map(item => {
           return {
             ...item,
-            src: `${process.env.VUE_APP_BASE_API}${item.cover}`
+           src: `${process.env.VUE_APP_BASE_API}${item.cover}`
           }
         });
         this.total = response.total;
@@ -400,7 +400,43 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.app-container {
+.pagination-container {
+  background: #f4f4f4;
+}
+
+.el-button--text{
+  color: #7a7a7a;
+}
+
+.app-page ::v-deep .el-pagination.is-background .btn-prev{
+  background: #ffffff;
+}
+.app-page ::v-deep .el-pagination.is-background .btn-next{
+  background: #ffffff;
+}
+
+.knowledge-dialog ::v-deep .el-upload--picture-card{
+  width: 60px;
+  height: 60px;
+  line-height: 65px;
+  background-color: #f6f6f6;
+  border: 1px dashed #eeeeee;
+  vertical-align: middle;
+}
+.knowledge-dialog ::v-deep .el-upload-list--picture-card .el-upload-list__item{
+  width: 60px;
+  height: 60px;
+  line-height: 65px;
+  background-color: #f6f6f6;
+  border: 1px dashed #eeeeee;
+  vertical-align: middle;
+}
+
+.app-container-box{
+  background: #f4f4f4;
+  margin: 10px 18px;
+  width: calc(100% - 36px);
+  height: 100%;
   .list {
     flex-wrap: wrap;
     .el-col {
@@ -410,36 +446,38 @@ export default {
   .card {
     border: 1px solid #DCDFE6;
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 10px 14px 8px 14px;
     box-sizing: border-box;
     height: 140px;
     cursor: pointer;
     transition: all 0.3s;
+    background-color: #ffffff;
     &:hover {
       box-shadow: 0px 0px 4px 4px #f1f1f1;
     }
-    &.add {
-      background-color: #F3F4F6;
-      
+    &.add {  
       .title {
         font-size: 16px;
         color: #6B7280;
         font-weight: bold;
       }
       .content {
-        font-size: 14px;
-        color: #333639;
-        margin-top: 14px;
+        font-size: 18px;
+        color: #7a7a7a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
       }
     }
     &.edit {
       display: flex;
       flex-direction: column;
       .content {
-        flex-grow: 1;
-        // width: 0px;
-        width: 100%;
+        flex: 1;
         display: flex;
+        padding: 16px 2px 0px 2px;
         .img {
           width: 70px;
           height: 70px;
@@ -450,31 +488,21 @@ export default {
           align-items: center;
           background-color: #DBEAFE;
           border-radius: 8px;
-          overflow: hidden;
-          img {
-            width: 100%;
-            height: 100%;
-          }
         }
         .context {
           margin-left: 14px;
-          flex-grow: 1;
-          width: 0px;
           .title {
             font-size: 16px;
-            color: #374151;
+            color: #4a4a4a;
             font-weight: bold;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
           }
           .desc {
             margin-top: 8px;
             font-size: 14px;
-            color: #6B7280;
+            color: #8b8b8b;
             display: -webkit-box; /* 将对象作为弹性伸缩盒子模型显示 */
             -webkit-box-orient: vertical; /* 设置或检索伸缩盒对象的子元素的排列方式 */
-            -webkit-line-clamp: 3; /* 限制显示的文本行数 */
+            -webkit-line-clamp: 2; /* 限制显示的文本行数 */
             overflow: hidden; /* 隐藏超出的内容 */
             text-overflow: ellipsis; /* 使用省略号表示被修剪的文本 */
           }
@@ -486,6 +514,13 @@ export default {
           flex: 1;
         }
         .right {
+          width: 30px;
+          height: 30px;
+          background: #e8e8e8;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           .more-btn {
             font-size: 18px;
           }

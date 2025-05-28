@@ -1,11 +1,13 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
-        <router-view v-if="!$route.meta.link" :key="key" />
-      </keep-alive>
-    </transition>
-    <iframe-toggle />
+
+      <transition name="fade-transform" mode="out-in">
+        <keep-alive :include="cachedViews">
+          <router-view v-if="!$route.meta.link" :key="key" />
+        </keep-alive>
+      </transition>
+      <iframe-toggle />
+
   </section>
 </template>
 
@@ -49,6 +51,13 @@ export default {
   width: 100%;
   position: relative;
   overflow: auto;
+  background: #f4f4f4;
+  .app-container{
+    margin: 10px 15px;
+    height: 100%;
+    width: calc(100% - 30px);
+    background: #ffffff;
+  }
 }
 
 .fixed-header + .app-main {

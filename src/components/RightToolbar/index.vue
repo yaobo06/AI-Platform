@@ -5,7 +5,7 @@
         <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()" />
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+        <el-button size="mini" circle icon="el-icon-refresh-right" @click="refresh()" />
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
         <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()" v-if="showColumnsType == 'transfer'"/>
@@ -145,6 +145,15 @@ export default {
 ::v-deep .el-transfer__button:first-child {
   margin-bottom: 10px;
 }
+
+.top-right-btn ::v-deep .el-button {
+  border: 0px;
+}
+
+.top-right-btn ::v-deep .el-button--mini{
+  font-size: 18px;
+}
+
 .check-line {
   width: 90%;
   height: 1px;
