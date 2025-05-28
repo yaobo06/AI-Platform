@@ -353,7 +353,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加提示词";
+      this.title = "添加第三方应用";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -362,7 +362,7 @@ export default {
       getApp(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改提示词";
+        this.title = "修改第三方应用";
       });
     },
     /** 提交按钮 */

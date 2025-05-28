@@ -1,8 +1,9 @@
 import Vue from 'vue'
 
 import Cookies from 'js-cookie'
-
+import lodash from 'lodash'
 import Element from 'element-ui'
+import moment from 'moment'
 import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
@@ -48,7 +49,8 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
-
+Vue.prototype.lodash = lodash
+Vue.prototype.moment = moment
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
