@@ -35,10 +35,10 @@
             </el-select>
           </el-input>
         </el-form-item>
-        <el-form-item label="巡更结果接收人" prop="receiver">
+        <el-form-item label="巡更结果接收人" prop="receivers">
           <el-select
             style="width: 100%;"
-            v-model="form.receiver"
+            v-model="form.receivers"
             multiple
             filterable
             remote
@@ -111,10 +111,15 @@ export default {
         this.form = {};
         return;
       }
+      const info = this.info;
+      if(info.id || !info.id) {
+        this.form = this.lodash.cloneDeep(info || {});
+        return;
+      }
       this.form = {
         startTime: this.moment().format('YYYY-MM-DD HH:mm'),
         unit: "1",
-        ...this.lodash.cloneDeep(this.info || {})
+        ...this.lodash.cloneDeep(info || {})
       };
     }
   },
