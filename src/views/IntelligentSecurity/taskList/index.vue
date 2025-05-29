@@ -28,19 +28,23 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
     <el-table v-loading="loading" :data="dataList" @selection-change="handleSelectionChange">
       <!-- <el-table-column type="selection" width="55" align="center" /> -->
       <el-table-column label="序号" align="center" type="index" />
       <el-table-column label="任务名称" align="center" prop="name" />
       <el-table-column label="最后执行时间" align="center" prop="lastTime" />
-      <el-table-column label="时间间隔" align="center" prop="timeInterval" />
+      <el-table-column label="时间间隔" align="center" prop="timeInterval">
+        
+        <template slot-scope="scope">
+          {{ scope.row.timeInterval }} {{ unitList.find(({value}) => value === scope.row.unit).label }}
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="ifvalid" >
         <template slot-scope="scope">
           <el-tag :type="scope.row.ifvalid === 1? 'success' : 'danger'">{{ scope.row.ifvalid === 1? "启用" : "停用" }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="140" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="240" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -48,6 +52,13 @@
             icon="el-icon-edit"
             @click="handleChangeState(scope.row)"
           >{{ scope.row.ifvalid === 1 ? "停用" : "启用" }}</el-button>
+          <cmTaskEditor :info="scope.row" class="el-button el-button--text el-button--mini">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+            >编辑</el-button>
+          </cmTaskEditor>
           <el-button
             size="mini"
             type="text"
@@ -122,25 +133,115 @@ export default {
           id: 1,
           name: "一厂巡更",
           lastTime: "2024-08-01 12:00:00",
-          timeInterval: "10分",
-          ifvalid: 1
+          startTime: "2024-08-01 12:00:00",
+          timeInterval: "10",
+          unit: "1",
+          ifvalid: 1,
+          receivers: ["1", "2", "3"],
+          monitors: [
+            {
+              id: 1,
+              name: "一厂后门",
+              ip: "192.168.55.66"
+            },
+            {
+              id: 2,
+              name: "一厂前门",
+              ip: "192.168.55.67"
+            },
+            {
+              id: 3,
+              name: "一厂实验室",
+              ip: "192.168.55.68"
+            },
+            {
+              id: 4,
+              name: "一厂吸烟室",
+              ip: "192.168.55.69"
+            }
+          ]
         },
         {
           id: 2,
           name: "二厂巡更",
           lastTime: "2024-08-01 12:00:00",
-          timeInterval: "10天",
-          ifvalid: 0
+          timeInterval: "10",
+          unit: "2",
+          ifvalid: 0,
+          receivers: ["1", "3"],
+          monitors: [
+            {
+              id: 1,
+              name: "一厂后门",
+              ip: "192.168.55.66"
+            },
+            {
+              id: 2,
+              name: "一厂前门",
+              ip: "192.168.55.67"
+            },
+            {
+              id: 3,
+              name: "一厂实验室",
+              ip: "192.168.55.68"
+            },
+            {
+              id: 4,
+              name: "一厂吸烟室",
+              ip: "192.168.55.69"
+            }
+          ]
         },
         {
           id: 3,
           name: "三厂巡更",
           lastTime: "2024-08-01 12:00:00",
-          timeInterval: "1时",
-          ifvalid: 1
+          timeInterval: "1",
+          unit: "3",
+          ifvalid: 1,
+          receivers: ["1"],
+          monitors: [
+            {
+              id: 1,
+              name: "一厂后门",
+              ip: "192.168.55.66"
+            },
+            {
+              id: 2,
+              name: "一厂前门",
+              ip: "192.168.55.67"
+            },
+            {
+              id: 3,
+              name: "一厂实验室",
+              ip: "192.168.55.68"
+            },
+            {
+              id: 4,
+              name: "一厂吸烟室",
+              ip: "192.168.55.69"
+            }
+          ]
         },
       ],
-      taskForm: {}
+      unitList: [
+        {
+          value: "1",
+          label: "分钟"
+        },
+        {
+          value: "2",
+          label: "小时"
+        },
+        {
+          value: "3",
+          label: "天"
+        },
+        {
+          value: "4",
+          label: "月"
+        }
+      ],
     };
   },
   created() {
@@ -196,8 +297,8 @@ export default {
     handleSelectionChange(selection) {
       // console.log(selection)
       // this.taskForm.monitors = this.lodash.cloneDeep(selection);
-      this.$set(this.taskForm, 'monitors', this.lodash.cloneDeep(selection))
-      console.log(this.taskForm.monitors)
+      // this.$set(this.taskForm, 'monitors', this.lodash.cloneDeep(selection))
+      // console.log(this.taskForm.monitors)
       this.ids = selection.map(item => item.id)
       this.single = selection.length!==1
       this.multiple = !selection.length
