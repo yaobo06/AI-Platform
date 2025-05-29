@@ -1,7 +1,7 @@
 <template>
   <div class="patrol-container">
     <div class="patrol-left">
-        <div class="patrol-left-top">
+        <div class="patrol-left-top" @click="extendChartTypeClick">
             <div class="patrol-left-bottom-title">
               <div class="event_title_left">事件总数: {{total}}
               </div>
@@ -18,12 +18,11 @@
                     </el-switch>
                 <span>已处理</span>
               </div>
-              
            </div>
            <div class="patrol-left-bottom-chart" ref="patrolStatus"></div>
            
         </div>
-        <div class="patrol-left-bottom">
+        <div class="patrol-left-bottom" @click="extendChartTypeClick">
            <div class="patrol-left-bottom-title">
               类型分布: 
            </div>
@@ -142,6 +141,7 @@ export default {
         lastUpdatedBy: null,
         lastUpdateDate: null
       },
+      echartSearchFlag: false,
       statusList: [{
         key: 'CLOSED',
         value: '已处理'
@@ -236,7 +236,6 @@ export default {
             });
             this.initChartAddr(echartAddrData)
         }
-
       });
     },
     initChartAddr(data, xAxisData){
@@ -283,6 +282,17 @@ export default {
                 }
             }]
         })
+        this.statusChart.on('click', (params) => {
+            event.stopPropagation()
+            if (params.componentType === 'series') {
+               this.queryParams.eventAddr = params.name
+               if(this.echartSearchFlag && this.queryParams.eventName){
+                  this.queryParams.eventName = ''
+               }
+               this.echartSearchFlag = true
+               this.getList()
+            }
+        });
     },
     initEchartType(data){
         this.typeChart = echarts.init(this.$refs.patrolType, "macarons");
@@ -307,10 +317,28 @@ export default {
                 }
             }]
         });
+        this.typeChart.on('click', (params) => {
+            event.stopPropagation()
+            if (params.componentType === 'series') {
+               this.queryParams.eventName = params.name
+               if(this.echartSearchFlag && this.queryParams.eventAddr){
+                  this.queryParams.eventAddr = ''
+               }
+               this.echartSearchFlag = true
+               this.getList()
+            }
+        });
     },
     statusChanged(){
-        console.info(this.queryParams.statusCode)
         this.handleQuery()
+    },
+    extendChartTypeClick(){
+        if(this.echartSearchFlag && (this.queryParams.eventName || this.queryParams.eventAddr)){
+            this.echartSearchFlag = false
+            this.queryParams.eventName = ''
+            this.queryParams.eventAddr = ''
+            this.getList()
+        }
     },
     // 取消按钮
     cancel() {

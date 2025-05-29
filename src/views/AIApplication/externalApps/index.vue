@@ -249,11 +249,12 @@ export default {
 .home-middle-title{
   font-size: 20px;
   font-weight: 700;
-  height: 40px;
+  height: 48px;
   padding-top: 8px;
   line-height: 36px;
   width:  100%;
-  margin-left: 20px;
+  padding-left: 16px;
+  border-bottom: 1px solid #e6ebf5;
 }
 
 .home-middle-panel{
@@ -335,6 +336,7 @@ export default {
 .function-pannel-title{
   width: 100%;
   height: 50px;
+  border-bottom: 1px solid #e6ebf5;
 }
 
 .function-pannel-title-left{
@@ -402,7 +404,7 @@ export default {
 }
 
 .pannel-item{
-  width: 25%;
+  width: calc(25% - 1px);
   height: 70px;
   float: left;
   cursor: pointer;
