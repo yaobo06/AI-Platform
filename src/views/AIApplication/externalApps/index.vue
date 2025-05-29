@@ -257,7 +257,8 @@ export default {
 }
 
 .home-middle-panel{
-  height: calc(100% - 40px);
+  margin-top: 16px;
+  height: calc(100% - 56px);
   width: 100%;
 }
  

@@ -3,22 +3,29 @@
     <div class="patrol-left">
         <div class="patrol-left-top">
             <div class="patrol-left-bottom-title">
-              事件总数: {{total}}
+              <div class="event_title_left">事件总数: {{total}}
+              </div>
+              <div class="event_title_right">
+                处理状态：
+                <span>未处理</span>
+                <el-switch
+                    v-model="queryParams.statusCode"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    active-value="CLOSED" 
+                    inactive-value="OPEN"
+                    @change="statusChanged">
+                    </el-switch>
+                <span>已处理</span>
+              </div>
+              
            </div>
            <div class="patrol-left-bottom-chart" ref="patrolStatus"></div>
+           
         </div>
         <div class="patrol-left-bottom">
            <div class="patrol-left-bottom-title">
-              状态分布: <span>未处理</span>
-              <el-switch
-                v-model="queryParams.statusCode"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-value="CLOSED" 
-                inactive-value="OPEN"
-                @change="statusChanged">
-                </el-switch>
-                <span>已处理</span>
+              类型分布: 
            </div>
            <div class="patrol-left-bottom-chart" ref="patrolType"></div>
         </div>
@@ -391,6 +398,18 @@ export default {
     font-weight: 700;
     padding-left:6px;
     color: #464646;
+}
+.event_title_left{
+    height: 100%;
+    width: 40%;
+    float: left;
+}
+.event_title_right{
+    height: 100%;
+    width: 60%;
+    float: right;
+    text-align: right;
+    padding-right: 20px;
 }
 .patrol-left-bottom-title span{
     font-size: 15px;
