@@ -27,6 +27,7 @@
     </el-form>
     <el-divider></el-divider>
     <div style="font-weight: bold;">一厂巡更任务</div>
+    <div class="receiver">推送接收人：张三、李四、王五</div>
     <el-row :gutter="10" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in dataList" :key="item.id">
         <div class="card edit" @click.stop="goTo(item)">
@@ -364,6 +365,10 @@ export default {
 
 <style lang="scss" scoped>
 .app-container {
+  .receiver {
+    margin-top: 10px;
+    color: #6B7280;
+  }
   .list {
     flex-wrap: wrap;
     .el-col {
