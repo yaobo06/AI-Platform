@@ -17,14 +17,14 @@
     </el-form>
     <div class="model_panel">
       <el-row :gutter="10" class="list mb8" type="flex">
-        <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
+        <!-- <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
           <div class="card add" @click="handleAdd">
             <div class="content">
               <svg-icon icon-class="edit" />
               创建空白模型
             </div>
           </div>
-        </el-col>
+        </el-col> -->
         <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in knowledgeList" :key="item.id">
           <div class="card edit" @click.stop="goTo(item)">
             <div class="content">
@@ -33,8 +33,8 @@
                 <img v-else :src="item.src" alt="" style="height: 100%;width: 100%;"/>
               </div>
               <div class="context">
-                <div class="title">{{ item.name }}</div>
-                <div class="desc">{{ item.des }}</div>
+                <div class="title" :title="item.name">{{ item.name }}</div>
+                <div class="desc" :title="item.des">{{ item.des }}</div>
               </div>
             </div>
             <div class="footer">
@@ -463,6 +463,7 @@ export default {
         }
         .context {
           margin-left: 14px;
+          width: 220px;
           .title {
             font-size: 16px;
             color: #4a4a4a;

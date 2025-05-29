@@ -1,24 +1,30 @@
 <template>
   <div class="patrol-container">
     <div class="patrol-left">
-        <div class="patrol-left-top">
+        <div class="patrol-left-top" @click="extendChartTypeClick">
             <div class="patrol-left-bottom-title">
-              事件总数: {{total}}
+              <div class="event_title_left">事件总数: {{total}}
+              </div>
+              <div class="event_title_right">
+                处理状态：
+                <span>未处理</span>
+                <el-switch
+                    v-model="queryParams.statusCode"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    active-value="CLOSED" 
+                    inactive-value="OPEN"
+                    @change="statusChanged">
+                    </el-switch>
+                <span>已处理</span>
+              </div>
            </div>
            <div class="patrol-left-bottom-chart" ref="patrolStatus"></div>
+           
         </div>
-        <div class="patrol-left-bottom">
+        <div class="patrol-left-bottom" @click="extendChartTypeClick">
            <div class="patrol-left-bottom-title">
-              状态分布: <span>未处理</span>
-              <el-switch
-                v-model="queryParams.statusCode"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-value="CLOSED" 
-                inactive-value="OPEN"
-                @change="statusChanged">
-                </el-switch>
-                <span>已处理</span>
+              类型分布: 
            </div>
            <div class="patrol-left-bottom-chart" ref="patrolType"></div>
         </div>
@@ -54,9 +60,9 @@
                 @keyup.enter.native="handleQuery"
                 />
             </el-form-item>
-            <el-form-item label="推送人" prop="createdBy">
+            <el-form-item label="推送人" prop="reciverUserIds">
                 <el-input
-                v-model="queryParams.createdBy"
+                v-model="queryParams.reciverUserIds"
                 placeholder="请输入推送人"
                 clearable
                 @keyup.enter.native="handleQuery"
@@ -135,6 +141,7 @@ export default {
         lastUpdatedBy: null,
         lastUpdateDate: null
       },
+      echartSearchFlag: false,
       statusList: [{
         key: 'CLOSED',
         value: '已处理'
@@ -229,7 +236,6 @@ export default {
             });
             this.initChartAddr(echartAddrData)
         }
-
       });
     },
     initChartAddr(data, xAxisData){
@@ -276,6 +282,17 @@ export default {
                 }
             }]
         })
+        this.statusChart.on('click', (params) => {
+            event.stopPropagation()
+            if (params.componentType === 'series') {
+               this.queryParams.eventAddr = params.name
+               if(this.echartSearchFlag && this.queryParams.eventName){
+                  this.queryParams.eventName = ''
+               }
+               this.echartSearchFlag = true
+               this.getList()
+            }
+        });
     },
     initEchartType(data){
         this.typeChart = echarts.init(this.$refs.patrolType, "macarons");
@@ -300,10 +317,28 @@ export default {
                 }
             }]
         });
+        this.typeChart.on('click', (params) => {
+            event.stopPropagation()
+            if (params.componentType === 'series') {
+               this.queryParams.eventName = params.name
+               if(this.echartSearchFlag && this.queryParams.eventAddr){
+                  this.queryParams.eventAddr = ''
+               }
+               this.echartSearchFlag = true
+               this.getList()
+            }
+        });
     },
     statusChanged(){
-        console.info(this.queryParams.statusCode)
         this.handleQuery()
+    },
+    extendChartTypeClick(){
+        if(this.echartSearchFlag && (this.queryParams.eventName || this.queryParams.eventAddr)){
+            this.echartSearchFlag = false
+            this.queryParams.eventName = ''
+            this.queryParams.eventAddr = ''
+            this.getList()
+        }
     },
     // 取消按钮
     cancel() {
@@ -391,6 +426,18 @@ export default {
     font-weight: 700;
     padding-left:6px;
     color: #464646;
+}
+.event_title_left{
+    height: 100%;
+    width: 40%;
+    float: left;
+}
+.event_title_right{
+    height: 100%;
+    width: 60%;
+    float: right;
+    text-align: right;
+    padding-right: 20px;
 }
 .patrol-left-bottom-title span{
     font-size: 15px;
