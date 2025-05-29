@@ -33,8 +33,8 @@
                 <img v-else :src="item.src" alt="" style="height: 100%;width: 100%;"/>
               </div>
               <div class="context">
-                <div class="title">{{ item.name }}</div>
-                <div class="desc">{{ item.des }}</div>
+                <div class="title" :title="item.name">{{ item.name }}</div>
+                <div class="desc" :title="item.des">{{ item.des }}</div>
               </div>
             </div>
             <div class="footer">
