@@ -54,9 +54,9 @@
                 @keyup.enter.native="handleQuery"
                 />
             </el-form-item>
-            <el-form-item label="推送人" prop="createdBy">
+            <el-form-item label="推送人" prop="reciverUserIds">
                 <el-input
-                v-model="queryParams.createdBy"
+                v-model="queryParams.reciverUserIds"
                 placeholder="请输入推送人"
                 clearable
                 @keyup.enter.native="handleQuery"

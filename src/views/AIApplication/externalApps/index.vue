@@ -5,7 +5,7 @@
         <span>置顶应用</span>
       </div>
       <div class="home-middle-panel">
-        <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index"  @click.stop="goTo(item)">
+        <!-- <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index"  @click.stop="goTo(item)">
           <div class="home-middle-item-left">
             <div class="home-middle-item-title" :title="item.name">
               {{item.name}}
@@ -18,7 +18,18 @@
             <svg-icon v-if="!item.cover" icon-class="documentation" />
             <img v-else :src="item.src" alt="" />
           </div>
-        </div>
+        </div> -->
+        <div class="pannel-item" v-for="(application, num) in applicationNav" :key="num" @click.stop="goTo(application)">
+              <div class="pannel-item-left">
+                <svg-icon v-if="!application.cover" icon-class="documentation" />
+                <img v-else :src="application.src" alt="" />
+              </div>
+              <div class="pannel-item-right">
+                <div class="pannel-item-title" :title="application.name" >{{application.name}}</div>
+                <div class="pannel-item-content" :title="application.des" v-if="application.des"><img src="../../../assets/images/flame.png">
+                <span>&nbsp;{{application.des}}s</span></div>
+              </div>
+            </div>
       </div>
     </div>
     <div class="home-bottom">
@@ -162,7 +173,8 @@ export default {
     },
     appendIconSrc(element){
       Object.assign(element, {
-        'src': process.env.VUE_APP_BASE_API + element.cover
+        //'src': process.env.VUE_APP_BASE_API + element.cover
+         'src': 'http://192.168.16.67/prod-api/' + element.cover
       })
     },
     formatResult(responseData){
