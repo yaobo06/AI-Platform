@@ -3,7 +3,7 @@
     <div class="patrol-left">
         <div class="patrol-left-top">
             <div class="patrol-left-bottom-title">
-              消息总数: {{total}}
+              事件总数: {{total}}
            </div>
            <div class="patrol-left-bottom-chart" ref="patrolStatus"></div>
         </div>
@@ -11,10 +11,12 @@
            <div class="patrol-left-bottom-title">
               状态分布: <span>未处理</span>
               <el-switch
-                v-model="eventStatus"
+                v-model="queryParams.statusCode"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
-                change="statusChanged">
+                active-value="CLOSED" 
+                inactive-value="OPEN"
+                @change="statusChanged">
                 </el-switch>
                 <span>已处理</span>
            </div>
@@ -300,7 +302,8 @@ export default {
         });
     },
     statusChanged(){
-
+        console.info(this.queryParams.statusCode)
+        this.handleQuery()
     },
     // 取消按钮
     cancel() {
@@ -312,6 +315,9 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+        this.getList();
+        this.getEventList()
+        this.getAddrList()
 
     },
     /** 重置按钮操作 */
