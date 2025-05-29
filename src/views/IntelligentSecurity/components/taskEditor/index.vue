@@ -35,6 +35,25 @@
             </el-select>
           </el-input>
         </el-form-item>
+        <el-form-item label="巡更结果接收人" prop="receiver">
+          <el-select
+            style="width: 100%;"
+            v-model="form.receiver"
+            multiple
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="searchReceivers"
+            :loading="receiversLoading">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -67,7 +86,23 @@ export default {
       form: {},
       rules: {
         
-      }
+      },
+      receiversLoading: false,
+      options: [
+        {
+          label: "张三",
+          value: "1",
+        },
+        {
+          label: "李四",
+          value: "2",
+        }
+        ,
+        {
+          label: "王五",
+          value: "3",
+        }
+      ]
     }
   },
   watch: {
@@ -89,6 +124,9 @@ export default {
         this.open = false;
         this.$emit("success");
       })
+    },
+    searchReceivers() {
+
     }
   }
 };
