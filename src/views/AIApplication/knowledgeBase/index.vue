@@ -1,7 +1,6 @@
 <template>
   <div class="app-container-box">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      
       <el-form-item label="知识库名称" prop="name" label-width="auto">
         <el-input
           v-model="queryParams.name"
@@ -10,58 +9,11 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
-    <!-- <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:knowledge:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:knowledge:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:knowledge:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:knowledge:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row> -->
     <el-row :gutter="10" class="list mb8" type="flex">
       <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
         <div class="card add" @click="handleAdd">
@@ -102,34 +54,6 @@
         </div>
       </el-col>
     </el-row>
-    <!-- <el-table v-loading="loading" :data="knowledgeList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
-      <el-table-column label="向量数据库ID" align="center" prop="embedStoreId" />
-      <el-table-column label="向量模型ID" align="center" prop="embedModelId" />
-      <el-table-column label="知识库名称" align="center" prop="name" />
-      <el-table-column label="描述" align="center" prop="des" />
-      <el-table-column label="封面" align="center" prop="cover" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:knowledge:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:knowledge:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table> -->
     
     <pagination
       v-show="total>0"
