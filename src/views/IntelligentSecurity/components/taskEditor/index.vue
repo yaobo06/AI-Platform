@@ -35,7 +35,7 @@
             </el-select>
           </el-input>
         </el-form-item>
-        <el-form-item label="推送接收人" prop="receiver">
+        <el-form-item label="巡更结果接收人" prop="receiver">
           <el-select
             style="width: 100%;"
             v-model="form.receiver"
