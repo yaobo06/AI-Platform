@@ -112,7 +112,7 @@ export default {
         return;
       }
       const info = this.info;
-      if(info.id || !info.id) {
+      if(info.id || info.id === 0) {
         this.form = this.lodash.cloneDeep(info || {});
         return;
       }
