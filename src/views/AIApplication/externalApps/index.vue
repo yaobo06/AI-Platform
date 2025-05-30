@@ -88,13 +88,6 @@ export default {
         type: null
       },
       topCards:[],
-      cards: [{
-        imgUrl: require('@/assets/images/deepseek-r1.png')
-      },{
-        imgUrl: require('@/assets/images/writting-assistant.png')
-      },{
-        imgUrl: require('@/assets/images/ernie-bot.png')
-      }],
       carousel:[],
       rowNum: 4,
       applicationTypes: [{
