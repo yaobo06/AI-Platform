@@ -9,23 +9,25 @@
       </div>
     </div>
     <div class="home-middle">
-      <div class="homa-detail">
+      <div class="home-middle-panel">
+        <div class="homa-detail">
         🎉 homa模型更新，思考更深，推理更强，在网页端、APP 和 API 全面上线。
-      </div>
-      <div class="homa-middle-logo">
-         <div>Homa AI</div>
-      </div>
-      <div class="homa-description">
-        <div>探索未至之境</div>
-      </div>
-      <div class="homa-panel">
-        <div  class="homa-application" v-for="(model, index) in modelList" :key="index" @click.stop="goTo(model)">
-          <div class="homa-application-img left">
-            <img :src="model.src" alt="" style="height: 80px">
-          </div>
-          <div class="homa-application-text right">
-            <div class="homa-application-title">{{ model.name }}</div>
-            <div class="homa-application-content" :title="model.des">{{ model.des }}</div>
+        </div>
+        <div class="homa-middle-logo">
+          <div>Homa AI</div>
+        </div>
+        <div class="homa-description">
+          <div>探索未至之境</div>
+        </div>
+        <div class="homa-panel">
+          <div  class="homa-application" v-for="(model, index) in modelList" :key="index" @click.stop="goTo(model)">
+            <div class="homa-application-img left">
+              <img :src="model.src" alt="" style="height: 80px">
+            </div>
+            <div class="homa-application-text right">
+              <div class="homa-application-title">{{ model.name }}</div>
+              <div class="homa-application-content" :title="model.des">{{ model.des }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -116,7 +118,13 @@ export default {
 .home-middle {
   height: calc(100% - 160px);
   width: 100%;
-  padding-top: 25px;
+  display: flex;
+  align-items: center;     /* 垂直居中 */
+}
+
+.home-middle-panel{
+  height: 450px;
+  width: 100%;
 }
 
 .homa-detail {
