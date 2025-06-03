@@ -2,7 +2,7 @@
   <div class="home-contianer">
     <div class="home-top">
       <div class="homa-logo left">
-        <img src="../assets/images/homa-logo.png">
+       
       </div>
       <div class="homa-top-right">
         
@@ -14,7 +14,7 @@
         🎉 homa模型更新，思考更深，推理更强，在网页端、APP 和 API 全面上线。
         </div>
         <div class="homa-middle-logo">
-          <div>Homa AI</div>
+          <div></div>
         </div>
         <div class="homa-description">
           <div>探索未至之境</div>
@@ -22,7 +22,7 @@
         <div class="homa-panel">
           <div  class="homa-application" v-for="(model, index) in modelList" :key="index" @click.stop="goTo(model)">
             <div class="homa-application-img left">
-              <img :src="model.src" alt="" style="height: 80px">
+              <img :src="model.src" alt="" style="height: 65px">
             </div>
             <div class="homa-application-text right">
               <div class="homa-application-title">{{ model.name }}</div>
@@ -67,8 +67,8 @@ export default {
         this.modelList = response.rows.map(item => {
           return {
             ...item,
-           //src: `${process.env.VUE_APP_BASE_API}${item.imageUrl}`
-           src: `http://192.168.16.67/prod-api/${item.imageUrl}`
+           src: `${process.env.VUE_APP_BASE_API}${item.imageUrl}`
+           //src: `http://192.168.16.67/prod-api/${item.imageUrl}`
           }
         });
       });
@@ -89,7 +89,7 @@ export default {
 .home-contianer {
   height: 100%;
   width: 100%;
-  background-image: url('../assets/images/blue-sky.webp');
+  background-image: url('../assets/images/hot-flame.png');
   background-size: cover;
   background-position: center;
   padding: 8px 20px;
@@ -138,15 +138,16 @@ export default {
   height: 160px;
   display: flex; 
   justify-content: center;
+  align-items: center;
   padding-top: 60px;
 }
 
 .homa-middle-logo div{
-  height: 80px;
-  width: 500px;
-  // background-image: url('../assets/images/logo.png');
-  // background-repeat: no-repeat;
-  // background-size: cover;
+  height: 60px;
+  width: 300px;
+  background-image: url('../assets/images/homa-AI.png');
+  background-repeat: no-repeat;
+  background-size: cover;
   text-align: center;
   color: #eb6112;
   font-size: 80px;
@@ -178,7 +179,7 @@ export default {
   background-color: hsla(0, 0%, 100%, .5);
   margin-left: 40px;
   border-radius: 8px;
-  padding: 12px 12px;
+  padding: 20px 20px;
   cursor: pointer;
   box-shadow: 0 0 0 1px #f1f5f9, 0 2px 4px rgba(0, 0, 0, .05), 0 12px 24px rgba(0, 0, 0, .05);
 }
@@ -196,7 +197,7 @@ export default {
 }
 
 .homa-application-img img{
-  height: 80px;
+  height: 65px;
 }
 
 
@@ -211,18 +212,19 @@ export default {
   height: 40%;
   width: 100%;
   color: #4a4a4a;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 40px;
   font-weight: 700;
 }
 .homa-application-content{
-  height: 60%;
+  height: calc(60% - 8px);
+  margin-top: 6px;
   width: 100%;
-  font-size: 14px;
+  font-size: 15px;
   color: #8b8b8b;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
 }
