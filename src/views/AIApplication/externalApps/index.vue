@@ -166,8 +166,7 @@ export default {
     },
     appendIconSrc(element){
       Object.assign(element, {
-        //'src': process.env.VUE_APP_BASE_API + element.cover
-         'src': 'http://192.168.16.67/prod-api/' + element.cover
+        'src': process.env.VUE_APP_BASE_API + element.cover
       })
     },
     formatResult(responseData){
@@ -255,7 +254,7 @@ export default {
   height: calc(100% - 56px);
   width: 100%;
 }
- 
+
 
 .home-middle-item{
   height: 100%;
