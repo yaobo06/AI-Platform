@@ -39,7 +39,7 @@
                 @keyup.enter.native="handleQuery"
                 />
             </el-form-item>
-            <el-form-item label="检测时间" prop="creationDate">
+            <el-form-item label="检测时间" prop="creationDateRange">
                 <el-date-picker clearable
                 v-model="queryParams.creationDateRange"
                 type="datetimerange"
@@ -73,22 +73,22 @@
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
             </el-form-item>
         </el-form>
-        <el-table v-loading="loading" :data="logList"  height="465">
+        <el-table v-loading="loading" :data="logList"  height="470">
             <el-table-column label="事件名称" align="center" prop="eventName" width="120"/>
-            <el-table-column label="分类" align="center" prop="eventCategory" />
-            <el-table-column label="检测时间" align="center" prop="creationDate" width="180">
+            <el-table-column label="分类" align="center" prop="eventCategory" width="80" />
+            <el-table-column label="检测时间" align="center" prop="creationDate" width="160">
                 <template slot-scope="scope">
                 <span>{{ parseTime(scope.row.creationDate, '{y}-{m}-{d}   {h}:{i}:{s}') }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="地址" align="center" prop="eventAddr"/>
+            <el-table-column label="地址" align="center" :show-overflow-tooltip="true" prop="eventAddr"/>
             <el-table-column label="推送人" align="center" :show-overflow-tooltip="true" prop="reciverUserIds" />
-            <el-table-column label="处理状态" align="center" prop="statusCode">
+            <el-table-column label="处理状态" align="center" prop="statusCode" width="80">
                 <template slot-scope="scope">
                 <span>{{ getStatusText(scope.row.statusCode) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="查看" align="center" prop="imgUrl">
+            <el-table-column label="查看" align="center" prop="imgUrl"  width="80">
                 <template slot-scope="scope">
                 <img v-if="scope.row.imgUrl" :src="scope.row.imgUrl" alt="" width=25 height=25 @click="showBigImg(scope.row.imgUrl)">
                 </template>
@@ -350,6 +350,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+        this.queryParams.pageNum = 1;
         this.getList();
         this.getEventList()
         this.getAddrList()
@@ -357,6 +358,8 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
 
     },
     /** 新增按钮操作 */

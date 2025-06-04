@@ -38,14 +38,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="类型" prop="lastUpdatedBy">
+      <!-- <el-form-item label="类型" prop="lastUpdatedBy">
         <el-input
           v-model="queryParams.eventType"
           placeholder="请输入类型"
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="推送人" prop="createdBy">
         <el-input
           v-model="queryParams.createdBy"
