@@ -186,7 +186,7 @@ export default {
     handleSelectionChange(selection) {
       // console.log(selection)
       // this.taskForm.monitors = this.lodash.cloneDeep(selection);
-      this.$set(this.taskForm, 'monitors', this.lodash.cloneDeep(selection))
+      this.$set(this.taskForm, 'monitors', this.lodash.cloneDeep(selection.map(({id}) => id)))
       console.log(this.taskForm.monitors)
       this.ids = selection.map(item => item.id)
       this.single = selection.length!==1
