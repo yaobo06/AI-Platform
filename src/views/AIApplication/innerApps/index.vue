@@ -1,45 +1,12 @@
 <template>
   <div class="home-contianer">
-    <div class="home-middle">
-      <div class="home-middle-title">
-        <span>奥马应用</span>
-      </div>
-      <div class="home-middle-panel">
-        <!-- <div class="home-middle-item" v-for="(item, index) in applicationNav" :key="index"  @click.stop="goTo(item)">
-          <div class="home-middle-item-left">
-            <div class="home-middle-item-title" :title="item.name">
-              {{item.name}}
-            </div>
-            <div class="home-middle-item-context" :title="item.des">
-              {{item.des}}
-            </div>
-          </div>
-          <div class="home-middle-item-right" v-if="item.src">
-            <svg-icon v-if="!item.cover" icon-class="documentation" />
-            <img v-else :src="item.src" alt="" />
-          </div>
-        </div> -->
-        <div class="pannel-item" v-for="(application, num) in applicationNav" :key="num" @click.stop="goTo(application)">
-              <div class="pannel-item-left">
-                <svg-icon v-if="!application.cover" icon-class="documentation" />
-                <img v-else :src="application.src" alt="" />
-              </div>
-              <div class="pannel-item-right">
-                <div class="pannel-item-title" :title="application.name" >{{application.name}}</div>
-                <div class="pannel-item-content" :title="application.des" v-if="application.des"><img src="../../../assets/images/flame.png">
-                <span>&nbsp;{{application.des}}s</span></div>
-              </div>
-            </div>
-      </div>
-    </div>
-<!--    <div class="home-bottom">
+    <div class="home-bottom">
       <div class="function-pannel">
         <div class="function-pannel-title">
           <div class="function-pannel-title-left">
-            <span>热门精选</span>
+            <span>奥马应用</span>
           </div>
           <div class="function-pannel-title-right">
-            &lt;!&ndash; <span>更多 &gt;</span> &ndash;&gt;
           </div>
         </div>
         <div class="function-pannel-content">
@@ -52,13 +19,13 @@
               <div class="pannel-item-right">
                 <div class="pannel-item-title" :title="application.name" >{{application.name}}</div>
                 <div class="pannel-item-content" :title="application.des" v-if="application.des"><img src="../../../assets/images/flame.png">
-                <span>&nbsp;{{application.des}}s</span></div>
+                  <span>&nbsp;{{application.des}}s</span></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>-->
+    </div>
   </div>
 
 </template>
@@ -103,7 +70,7 @@ export default {
         label: '热门',
         section: 'buttom'
       }],
-      activeType: '2',
+      activeType: '99',
       className: ''
     };
   },
@@ -113,7 +80,7 @@ export default {
     this.getApplicationTop()
   },
   mounted(){
-   // this.getApplicationTop()
+    // this.getApplicationTop()
   },
   methods: {
     goTarget(href) {
@@ -137,7 +104,7 @@ export default {
       });
     },
     getApplicationTop(){
-      this.queryParams.type = '99'
+      this.queryParams.type = '0'
       listApp(this.queryParams).then(response => {
         let responseData = response.rows || []
         responseData.forEach(item => {
@@ -147,48 +114,48 @@ export default {
       });
     },
     getApplicationNav(){
-      this.queryParams.type = '99'
+      this.queryParams.type = '1'
       listApp(this.queryParams).then(response => {
         this.total = response.total;
         let responseData = response.rows || []
         let length = responseData.length
         this.applicationNav = []
-        for(let i = 0; i < 4; i++){
-          if(i < length ){
+        for (let i = 0; i < 4; i++) {
+          if (i < length) {
             this.appendIconSrc(responseData[i])
             this.applicationNav.push(responseData[i])
-          }else{
+          } else {
             this.applicationNav.push([])
           }
         }
       });
     },
-    appendIconSrc(element){
+    appendIconSrc(element) {
       Object.assign(element, {
         'src': process.env.VUE_APP_BASE_API + element.cover
       })
     },
-    formatResult(responseData){
-      if(!responseData || responseData.length == 0){
-          return []
+    formatResult(responseData) {
+      if (!responseData || responseData.length == 0) {
+        return []
       }
       let applicationGrid = []
       let applicationRow = []
       responseData.forEach(element => {
         this.appendIconSrc(element)
-        if(applicationRow.length == this.rowNum){
+        if (applicationRow.length == this.rowNum) {
           applicationGrid.push([...applicationRow])
           applicationRow = []
         }
         applicationRow.push(element)
       });
-      if(applicationRow.length > 0){
+      if (applicationRow.length > 0) {
         applicationGrid.push([...applicationRow])
       }
       return applicationGrid
     },
-    goTo({appUrl}) {
-      if(!appUrl) {
+    goTo({ appUrl }) {
+      if (!appUrl) {
         this.$modal.msgError('链接地址为空');
         return;
       }
@@ -200,14 +167,14 @@ export default {
 
 <style scoped lang="scss">
 
-.home-contianer{
+.home-contianer {
   height: 100%;
   width: 100%;
   margin-top: 8px;
   background: #f5f5f5;
 }
 
-.home-top{
+.home-top {
   height: 225px;
   width: calc(100% - 50px);
   margin: 0px 15px 10px 25px;
@@ -219,10 +186,12 @@ export default {
   overflow: hidden; /* 隐藏溢出部分 */
   white-space: nowrap; /* 防止子元素换行 */
 }
+
 .carousel-inner {
   display: flex; /* 使用flex布局 */
   transition: transform 0.5s ease; /* 平滑过渡效果 */
 }
+
 .carousel-item {
   display: inline-block; /* 让项目横向排列 */
   width: 30%; /* 根据需要调整宽度 */
@@ -237,25 +206,25 @@ export default {
   background: #ffffff;
 }
 
-.home-middle-title{
+.home-middle-title {
   font-size: 20px;
   font-weight: 700;
   height: 48px;
   padding-top: 8px;
   line-height: 36px;
-  width:  100%;
+  width: 100%;
   padding-left: 16px;
   border-bottom: 1px solid #e6ebf5;
 }
 
-.home-middle-panel{
+.home-middle-panel {
   margin-top: 16px;
   height: calc(100% - 56px);
   width: 100%;
 }
 
 
-.home-middle-item{
+.home-middle-item {
   height: 100%;
   margin-left: 16px;
   width: calc(25% - 19px);
@@ -266,14 +235,14 @@ export default {
   cursor: pointer;
 }
 
-.home-middle-item-left{
+.home-middle-item-left {
   height: 100%;
   width: 75%;
   float: left;
   padding-left: 10px;
 }
 
-.home-middle-item-right{
+.home-middle-item-right {
   height: 100%;
   width: 25%;
   float: left;
@@ -283,13 +252,13 @@ export default {
   padding-right: 12px;
 }
 
-.home-middle-item-right img{
+.home-middle-item-right img {
   width: 50px;
   height: 50px;
   border-radius: 8px;
 }
 
-.home-middle-item-title{
+.home-middle-item-title {
   font-size: 16px;
   font-weight: 700;
   height: 35%;
@@ -300,7 +269,7 @@ export default {
   overflow: hidden;
 }
 
-.home-middle-item-context{
+.home-middle-item-context {
   font-size: 12px;
   font-weight: 400;
   height: 60%;
@@ -311,26 +280,26 @@ export default {
   overflow: hidden;
 }
 
-.home-bottom{
+.home-bottom {
   height: calc(100% - 205px);
   width: calc(100% - 50px);
   margin: 20px 15px 10px 25px;
 }
 
-.function-pannel{
+.function-pannel {
   background: #ffffff;
   width: 100%;
   height: 100%;
   border-radius: 8px;
 }
 
-.function-pannel-title{
+.function-pannel-title {
   width: 100%;
   height: 50px;
   border-bottom: 1px solid #e6ebf5;
 }
 
-.function-pannel-title-left{
+.function-pannel-title-left {
   font-size: 20px;
   float: left;
   font-weight: 700;
@@ -341,7 +310,7 @@ export default {
   padding-left: 16px;
 }
 
-.function-pannel-title-right{
+.function-pannel-title-right {
   font-size: 14px;
   float: right;
   width: calc(10% + 10px);
@@ -349,7 +318,7 @@ export default {
   padding-top: 15px;
 }
 
-.function-pannel-title-right span{
+.function-pannel-title-right span {
   float: right;
   padding-right: 18px;
 }
@@ -363,7 +332,7 @@ export default {
   line-height: 28px;
 }
 
-.function-pannel-type-label{
+.function-pannel-type-label {
   height: 100%;
   width: 60px;
   background: #f2f2f2;
@@ -375,7 +344,7 @@ export default {
 }
 
 .function-pannel-type-label:first-of-type {
-  margin-left:0px;
+  margin-left: 0px;
 }
 
 .active-label {
@@ -394,13 +363,14 @@ export default {
   padding-top: 12px;
 }
 
-.pannel-item{
+.pannel-item {
   width: calc(25% - 1px);
   height: 70px;
   float: left;
   cursor: pointer;
 }
-.pannel-item-left{
+
+.pannel-item-left {
   width: 80px;
   height: 100%;
   float: left;
@@ -409,23 +379,25 @@ export default {
   justify-content: center; /* 水平居中，如果需要的话 */
 }
 
-.pannel-item-left img{
+.pannel-item-left img {
   height: 55px;
   width: 55px;
   border-radius: 12px;
 }
 
-.pannel-item-right{
+.pannel-item-right {
   width: calc(100% - 80px);
-  height:  100%;
+  height: 100%;
   float: left;
 }
-.pannel-item-title{
+
+.pannel-item-title {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 2px;
 }
-.pannel-item-content{
+
+.pannel-item-content {
   font-size: 14px;
   color: #939393;
   margin-top: 2px;
@@ -435,10 +407,11 @@ export default {
   overflow: hidden;
 }
 
-.pannel-item-content img{
+.pannel-item-content img {
   margin-top: 1px;
 }
-::v-deep .el-carousel__indicators--outside{
+
+::v-deep .el-carousel__indicators--outside {
   display: none
 }
 
