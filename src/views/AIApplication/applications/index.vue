@@ -165,7 +165,7 @@
         </template>
       </el-table-column>
     </el-table> -->
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -201,6 +201,11 @@
         <el-form-item label="应用描述" prop="des">
           <el-input v-model="form.des" type="textarea" rows="3" maxlength="300" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="应用类型">
+          <el-select v-model="form.type" placeholder="请选择类型">
+            <el-option v-for="dict in dict.type.app_type" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -215,6 +220,7 @@ import { listApp, getApp, delApp, addApp, updateApp, getModels } from "./app";
 
 export default {
   name: "App",
+  dicts: ['app_type'],
   data() {
     return {
       // 遮罩层
@@ -291,7 +297,7 @@ export default {
         });
       }, immediate ? 0 : 800);
 
-      
+
     },
     /** 查询提示词列表 */
     getList() {
@@ -420,13 +426,13 @@ export default {
     min-height: 140px;
     cursor: pointer;
     transition: all 0.3s;
-    
+
     &:hover {
       box-shadow: 0px 0px 4px 4px #f1f1f1;
     }
     &.add {
       background-color: #F3F4F6;
-      
+
       .title {
         font-size: 16px;
         color: #6B7280;
