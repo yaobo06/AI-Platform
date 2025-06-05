@@ -177,31 +177,31 @@ export default {
       baseDataList: [
         {
           id: 1,
-          name: "一厂后门",
+          name: "一厂过道",
           ip: "192.168.55.66",
           time: '2024-05-15 11:00:00',
-          picUrl: require("./images/1.jpg"),
+          picUrl: "https://192.168.6.252:6113/pic?3d99=0a90ie1-=o6f1bp49fd5595-185b4d0b4*118s=**416==tp*7210=9649825*8730=0l2*0223=0o952-11*le5-od10a7728d70&AccessKeyId=WvlDbRQUl9rq+fXu&Expires=1749116085&Signature=Lz+B9rO3jsmB9o2Ym0SPto/vfG0=",
         },
         {
           id: 2,
-          name: "一厂前门",
+          name: "一厂后门",
           ip: "192.168.55.67",
           time: '2024-05-15 11:00:00',
-          picUrl: require("./images/2.jpg"),
+          picUrl: "https://192.168.6.252:6113/pic?3d99=0a90ie1-=o0f1bp31fd5195-185b4d0b4*118s=**416==tp*7610=9849123*0241=9l9*0233=0o322-12*le5-od10a7728d70&AccessKeyId=WvlDbRQUl9rq+fXu&Expires=1749116203&Signature=wQf/p80QrEJEIRNjXVuQrH1R+aQ=",
         },
         {
           id: 3,
-          name: "一厂实验室",
+          name: "一厂生产线",
           ip: "192.168.55.68",
           time: '2024-05-15 11:00:00',
-          picUrl: require("./images/3.jpeg"),
+          picUrl: "https://192.168.6.252:6113/pic?3d99=0a90ie1-=o8f1bp15fd5795-185b4d0b4*118s=**417==tp*7710=9040033*4637=0l3*0439=0o382-17*le5-od10a7728d70&AccessKeyId=WvlDbRQUl9rq+fXu&Expires=1749116443&Signature=7wPV9TM8SUfaR/rIJO7cjvNIZSU=",
         },
         {
           id: 4,
-          name: "一厂吸烟室",
+          name: "一厂前门",
           ip: "192.168.55.69",
           time: '2024-05-15 11:00:00',
-          picUrl: require("./images/4.jpeg"),
+          picUrl: "https://192.168.6.252:6113/pic?0d7d8277a01do-5el*21-290o0=7527*0l7=3346*3340419=0187*=t110**ps2=7*8b0=4b181459d5d594-b172of-1pi0fa0=99=e93&AccessKeyId=WvlDbRQUl9rq+fXu&Expires=1749116563&Signature=/xt8SXldktad58iBN4ux0NBlS/A=",
         }
       ],
     };
