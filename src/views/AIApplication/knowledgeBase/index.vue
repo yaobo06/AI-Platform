@@ -15,7 +15,7 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="list mb8" type="flex">
-      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
+      <el-col v-hasPermi="['knowledgeBase:add']" :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
         <div class="card add" @click="handleAdd">
           <div class="content">
             <svg-icon icon-class="edit" />
@@ -39,7 +39,7 @@
             <div class="left">
               
             </div>
-            <div class="right" @click.stop>
+            <div class="right" v-hasPermi="['knowledgeBase:add']" @click.stop>
               <el-dropdown trigger="click" @command="(methodName) => {
                 handleCommand(methodName, item);
               }">

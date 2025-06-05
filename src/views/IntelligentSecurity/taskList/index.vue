@@ -52,7 +52,11 @@
             icon="el-icon-edit"
             @click="handleChangeState(scope.row)"
           >{{ scope.row.ifvalid === 1 ? "停用" : "启用" }}</el-button>
-          <cmTaskEditor :info="scope.row" class="el-button el-button--text el-button--mini">
+          <cmTaskEditor :info="{
+            ...scope.row,
+            monitors: scope.row.monitors.map(({id}) => (id)),
+
+          }" class="el-button el-button--text el-button--mini">
             <el-button
               size="mini"
               type="text"
