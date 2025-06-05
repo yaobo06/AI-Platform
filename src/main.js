@@ -5,6 +5,7 @@ import lodash from 'lodash'
 import Element from 'element-ui'
 import moment from 'moment'
 import './assets/styles/element-variables.scss'
+import './assets/styles/fonts.scss'
 
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/ruoyi.scss' // ruoyi css
