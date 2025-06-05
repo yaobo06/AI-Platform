@@ -46,10 +46,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item> -->
-      <el-form-item label="推送人" prop="createdBy">
+      <el-form-item label="消息接收人" prop="createdBy">
         <el-input
           v-model="queryParams.createdBy"
-          placeholder="请输入推送人"
+          placeholder="请输入消息接收人"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -106,7 +106,7 @@
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center" prop="eventAddr"/>
-      <el-table-column label="推送人" align="center" prop="reciverUserIds" />
+      <el-table-column label="消息接收人" align="center" prop="reciverUserIds" />
       <el-table-column label="处理状态" align="center" prop="statusCode">
         <template slot-scope="scope">
           <span>{{ getStatusText(scope.row.statusCode) }}</span>
