@@ -253,7 +253,7 @@ export default {
 .detail-above{
     width: 100%;
     height: 55%;
-    background: #777694;
+    background: #312e81;
     display: flex;
     justify-content: center;
     align-items: center;
