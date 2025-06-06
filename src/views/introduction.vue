@@ -17,12 +17,6 @@
         </div>
         <div class="introduction-list"  v-if="step == 'second'">
             <div class="list-above">
-                <!-- <div class="list-above-item" @click="nextStep()">
-                    <img src="../assets/images/black-globe.png">
-                </div>
-                <div class="list-above-item" @click="nextStep()">
-                    <img src="../assets/images/black-grid.png">
-                </div> -->
                 <el-carousel indicator-position="outside">
                     <el-carousel-item v-for="(aboveItem, index) in aboveCarousel" :key="index">
                         <div v-for="(aboveElement, num) in aboveItem" :key="num" class="list-above-item" @click="nextStep()">
@@ -63,7 +57,6 @@
 import { listApp, getModels} from "@/views/AIApplication/applications/app";
 export default {
   name: "introduction",
-  components: { VueSlickCarousel },
   data() {
     return {
         step: 'frist',
