@@ -136,12 +136,12 @@ export default {
   }
 
   .sidebar-container ::v-deep .el-menu .el-menu-item {
-    background: #212129 !important;
+    background: #393d45 !important;
     color: #ffffff !important;
   }
 
   .sidebar-container ::v-deep  .el-submenu__title{
-    background: #212129 !important;
+    background: #393d45 !important;
     color: #ffffff !important;
   }
 

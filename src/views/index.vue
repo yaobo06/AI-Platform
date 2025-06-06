@@ -97,7 +97,7 @@ export default {
 }
 
 .home-top {
-  height: 80px;
+  height: 60px;
   width: 100%;
   padding: 12px 2px;
 }

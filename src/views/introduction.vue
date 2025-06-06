@@ -45,10 +45,10 @@
             <div class="detail-above" @click="nextStep()">
                 <div class="detail-above-text">
                     <div class="detail-above-title">
-                        Empowering innovation through advanced AI solutions.
+                        {{ detailTitle }}
                     </div>
                     <div class="detail-above-content">
-                        discover the future of technology today!
+                        {{ detailContent}}
                     </div>
                 </div>
             </div>
@@ -69,6 +69,8 @@ export default {
         step: 'frist',
         content: 'Discover cutting-edge Al applications designed to transform your business landscape. With our advanced solutions, we empower you to leverage technology for enhanced productivity and innovation. Join us in shaping the future of Al today!',
         title: 'Elevate Your AI Experience',
+        detailTitle: 'mpowering innovation through advanced AI solutions.',
+        detailContent: 'discover the future of technology today!',
         queryParams:{
 
         },
@@ -258,7 +260,7 @@ export default {
 .detail-above{
     width: 100%;
     height: 55%;
-    background: #312e81;
+    background: #777694;
     display: flex;
     justify-content: center;
     align-items: center;
