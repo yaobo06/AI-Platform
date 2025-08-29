@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AiModelsMapper">
+   <!-- 自定义结果集-->
+    <resultMap type="AiModels" id="AiModelsResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="imageUrl"    column="image_url"    />
+        <result property="categoryType"    column="category_type"    />
+        <result property="statusCode"    column="status_code"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="version"    column="version"    />
+        <result property="tags"    column="tags"    />
+        <result property="experienceUrl"    column="experience_url"    />
+    </resultMap>
+
+    <sql id="selectAiModelsVo">
+        select id, name, description, image_url, category_type, status_code, update_time, version, tags, experience_url from ai_models
+    </sql>
+
+    <select id="selectAiModelsList" parameterType="AiModels" resultMap="AiModelsResult">
+        <include refid="selectAiModelsVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="imageUrl != null  and imageUrl != ''"> and image_url = #{imageUrl}</if>
+            <if test="categoryType != null  and categoryType != ''"> and category_type = #{categoryType}</if>
+            <if test="statusCode != null "> and status_code = #{statusCode}</if>
+            <if test="version != null  and version != ''"> and version = #{version}</if>
+            <if test="tags != null  and tags != ''"> and tags = #{tags}</if>
+            <if test="experienceUrl != null  and experienceUrl != ''"> and experience_url = #{experienceUrl}</if>
+        </where>
+    </select>
+    
+    <select id="selectAiModelsById" parameterType="Long" resultMap="AiModelsResult">
+        <include refid="selectAiModelsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAiModels" parameterType="AiModels" useGeneratedKeys="true" keyProperty="id">
+        insert into ai_models
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="description != null">description,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="categoryType != null">category_type,</if>
+            <if test="statusCode != null">status_code,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="version != null">version,</if>
+            <if test="tags != null">tags,</if>
+            <if test="experienceUrl != null">experience_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="categoryType != null">#{categoryType},</if>
+            <if test="statusCode != null">#{statusCode},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="version != null">#{version},</if>
+            <if test="tags != null">#{tags},</if>
+            <if test="experienceUrl != null">#{experienceUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAiModels" parameterType="AiModels">
+        update ai_models
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="categoryType != null">category_type = #{categoryType},</if>
+            <if test="statusCode != null">status_code = #{statusCode},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="experienceUrl != null">experience_url = #{experienceUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAiModelsById" parameterType="Long">
+        delete from ai_models where id = #{id}
+    </delete>
+
+    <delete id="deleteAiModelsByIds" parameterType="String">
+        delete from ai_models where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
