@@ -185,4 +185,44 @@ export default {
     }
   }
 }
+
+// 移动端适应
+@media (max-width: 768px) {
+  .navbar {
+    .topmenu-container {
+      display: none;
+    }
+
+    .right-menu {
+      .right-menu-item {
+        padding: 0 4px;
+        font-size: 16px;
+
+        &:not(.avatar-container) {
+          display: none;
+        }
+      }
+
+      .avatar-container {
+        margin-right: 10px;
+
+        .avatar-wrapper {
+          .user-avatar {
+            width: 32px;
+            height: 32px;
+          }
+
+          .el-icon-caret-bottom {
+            right: -15px;
+            top: 20px;
+          }
+        }
+      }
+    }
+
+    .breadcrumb-container {
+      display: none;
+    }
+  }
+}
 </style>

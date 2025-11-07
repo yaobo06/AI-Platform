@@ -1,0 +1,83 @@
+// 简单的响应式工具类
+// 移动端断点
+$mobile: 768px;
+$tablet: 1024px;
+
+// 设备类型样式
+.is-mobile {
+  // 移动端特有样式
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .show-on-mobile {
+    display: block !important;
+  }
+}
+
+.is-tablet {
+  // 平板特有样式  
+  .hide-on-tablet {
+    display: none !important;
+  }
+  
+  .show-on-tablet {
+    display: block !important;
+  }
+}
+
+.is-desktop {
+  // 桌面特有样式
+  .hide-on-desktop {
+    display: none !important;
+  }
+  
+  .show-on-desktop {
+    display: block !important;
+  }
+}
+
+// 移动端全局适配
+@media (max-width: #{$mobile}) {
+  body {
+    font-size: 14px;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .mobile-text-center {
+    text-align: center !important;
+  }
+  
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  .mobile-show {
+    display: block !important;
+  }
+}
+
+// 平板适配
+@media (min-width: #{$mobile + 1px}) and (max-width: #{$tablet}) {
+  .tablet-hide {
+    display: none !important;
+  }
+  
+  .tablet-show {
+    display: block !important;
+  }
+}
+
+// 桌面适配
+@media (min-width: #{$tablet + 1px}) {
+  .desktop-hide {
+    display: none !important;
+  }
+  
+  .desktop-show {
+    display: block !important;
+  }
+} 

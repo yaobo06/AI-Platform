@@ -7,9 +7,9 @@ function resolve(dir) {
 
 const CompressionPlugin = require('compression-webpack-plugin')
 
-const name = process.env.VUE_APP_TITLE || '奥马AI中台' // 网页标题
+const name = process.env.VUE_APP_TITLE || 'AI Platform' // 网页标题
 
-const port = process.env.port || process.env.npm_config_port || 8089 // 端口
+const port = process.env.port || process.env.npm_config_port || 8089// 端口
 // console.log(999,process.env.VUE_APP_BASE_API)
 const date = new Date();
 const year = date.getFullYear();
@@ -43,7 +43,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        // target: `http://192.168.16.67:8080`,//生产及测试环境用localhost，前后端部署在相同服务器上
+        /* target: `http://47.113.98.181:8080`,//生产及测试环境用localhost，前后端部署在相同服务器上 */
         target: `http://localhost:8080`,
         changeOrigin: true,
         pathRewrite: {

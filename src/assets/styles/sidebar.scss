@@ -225,3 +225,70 @@
     }
   }
 }
+
+// 移动端额外优化
+@media (max-width: 768px) {
+  .app-wrapper {
+    &.mobile {
+      .sidebar-container {
+        .el-menu {
+          .el-menu-item,
+          .el-submenu__title {
+            height: 50px;
+            line-height: 50px;
+            font-size: 14px;
+            padding: 0 20px;
+          }
+
+          .svg-icon {
+            margin-right: 12px;
+            font-size: 18px;
+          }
+        }
+
+        .el-scrollbar__wrap {
+          overflow-x: hidden;
+        }
+      }
+
+      .drawer-bg {
+        background: #000;
+        opacity: 0.3;
+        width: 100%;
+        top: 0;
+        height: 100%;
+        position: absolute;
+        z-index: 999;
+      }
+    }
+  }
+
+  .sidebar-container {
+    .el-menu {
+      border-right: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .app-wrapper {
+    &.mobile {
+      .sidebar-container {
+        .el-menu {
+          .el-menu-item,
+          .el-submenu__title {
+            height: 45px;
+            line-height: 45px;
+            font-size: 13px;
+            padding: 0 15px;
+          }
+
+          .svg-icon {
+            margin-right: 10px;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}

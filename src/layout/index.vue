@@ -109,6 +109,52 @@ export default {
     width: 100%;
   }
 
+  // 移动端额外样式
+  @media (max-width: 768px) {
+    .app-wrapper {
+      &.mobile {
+        .main-container {
+          margin-left: 0;
+          min-height: calc(100vh - 50px);
+        }
+
+        .sidebar-container {
+          transition: transform 0.28s;
+          width: $base-sidebar-width !important;
+        }
+
+        &.hideSidebar .sidebar-container {
+          pointer-events: none;
+          transition-duration: 0.3s;
+          transform: translate3d(-$base-sidebar-width, 0, 0);
+        }
+
+        &.openSidebar .sidebar-container {
+          transform: translate3d(0, 0, 0);
+        }
+      }
+    }
+
+    .hasTagsView {
+      .main-container {
+        min-height: calc(100vh - 84px);
+      }
+    }
+
+    .fixed-header + .app-main {
+      padding-top: 84px;
+    }
+
+    .fixed-header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 9;
+      width: 100%;
+      transition: width 0.28s;
+    }
+  }
+
   .main-container ::v-deep .el-button--primary{
     background: #ea6111;
     border: #ea6111;

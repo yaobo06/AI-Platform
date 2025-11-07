@@ -13,7 +13,7 @@ export function getModels(keyWords = "") {
 // 查询提示词列表
 export function listApp(query) {
   return request({
-    url: '/system/app/list',
+    url: '/system/homepage/getIntroductionInfo',
     method: 'get',
     params: query
   })

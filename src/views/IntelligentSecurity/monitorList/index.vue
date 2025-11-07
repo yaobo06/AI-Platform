@@ -234,3 +234,137 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+// 移动端适应
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+
+    // 搜索表单适应
+    .el-form {
+      .el-form-item {
+        width: 100%;
+        margin-bottom: 15px;
+
+        .el-form-item__label {
+          width: 100px;
+          text-align: left;
+        }
+
+        .el-form-item__content {
+          margin-left: 100px;
+
+          .el-input {
+            width: 100%;
+          }
+        }
+      }
+
+      &.el-form--inline {
+        .el-form-item {
+          width: 100%;
+          display: block;
+        }
+      }
+    }
+
+    // 按钮组适应
+    .mb8 {
+      .el-col {
+        margin-bottom: 8px;
+        width: 100%;
+
+        .el-button {
+          width: 100%;
+          font-size: 13px;
+        }
+      }
+
+      .el-col:last-child {
+        .right-toolbar {
+          float: none;
+          text-align: center;
+        }
+      }
+    }
+
+    // 表格适应
+    .el-table {
+      font-size: 13px;
+      
+      .el-table__header-wrapper,
+      .el-table__body-wrapper {
+        overflow-x: auto;
+      }
+
+      .el-table__body {
+        .cell {
+          word-break: break-all;
+          white-space: normal;
+        }
+      }
+
+      .el-table-column--selection {
+        width: 40px;
+      }
+      
+      .small-padding.fixed-width {
+        width: 100px;
+        
+        .el-button {
+          padding: 2px 6px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    // 分页适应
+    .pagination-container {
+      text-align: center;
+      padding: 15px 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 5px;
+
+    .el-form {
+      .el-form-item {
+        .el-form-item__label {
+          width: 80px;
+          font-size: 12px;
+        }
+
+        .el-form-item__content {
+          margin-left: 80px;
+        }
+      }
+    }
+
+    .mb8 {
+      .el-col {
+        .el-button {
+          font-size: 12px;
+          padding: 6px 12px;
+        }
+      }
+    }
+
+    .el-table {
+      font-size: 12px;
+      
+      .small-padding.fixed-width {
+        width: 80px;
+        
+        .el-button {
+          padding: 1px 4px;
+          font-size: 11px;
+        }
+      }
+    }
+  }
+}
+</style>

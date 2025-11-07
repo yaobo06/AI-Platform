@@ -1,48 +1,41 @@
 <template>
-  <div class="home-contianer">
-    <div class="home-top">
-      <div class="homa-logo left">
-       
-      </div>
-      <div class="homa-top-right">
-        
-      </div>
-    </div>
-    <div class="home-middle">
-      <div class="home-middle-panel">
-        <div class="homa-detail">
-        🎉 homa模型更新，思考更深，推理更强，在网页端、APP 和 API 全面上线。
-        </div>
-        <div class="homa-middle-logo">
-          <div></div>
-        </div>
-        <div class="homa-description">
-          <div>探索未至之境</div>
-        </div>
-        <div class="homa-panel">
-          <div  class="homa-application" v-for="(model, index) in modelList" :key="index" @click.stop="goTo(model)">
-            <div class="homa-application-img left">
-              <img :src="model.src" alt="" style="height: 65px">
-            </div>
-            <div class="homa-application-text right">
-              <div class="homa-application-title">{{ model.name }}</div>
-              <div class="homa-application-content" :title="model.des">{{ model.des }}</div>
-            </div>
+  <div class="ai-home-container">
+<!--    <header class="ai-header">
+      <img src="../assets/images/homa-logo.png" class="ai-logo" alt="AI Logo" />
+      <div class="ai-title">AI Platform</div>
+      <div class="ai-slogan">Empowering the Future with Artificial Intelligence</div>
+    </header>
+    <section class="ai-carousel-section">
+      <el-carousel height="340px" indicator-position="outside" arrow="always" class="ai-carousel">
+        <el-carousel-item v-for="(img, idx) in carouselImages" :key="idx">
+          <img :src="img.src" :alt="img.alt" class="ai-carousel-img" />
+        </el-carousel-item>
+      </el-carousel>
+    </section>
+    <section class="ai-models-section">
+      <div class="ai-models-title">AI 应用模型</div>
+      <div class="ai-models-panel">
+        <div class="ai-model-card" v-for="(model, index) in modelList" :key="index" @click.stop="goTo(model)">
+          <div class="ai-model-img">
+            <img :src="model.src" alt="" />
+          </div>
+          <div class="ai-model-info">
+            <div class="ai-model-name">{{ model.name }}</div>
+            <div class="ai-model-desc" :title="model.des">{{ model.des }}</div>
           </div>
         </div>
       </div>
-    </div>
+    </section>-->
   </div>
 </template>
 
-<script>
+<!--<script>
 import { listModel } from "@/views/AIApplication/models/model";
 
 export default {
   name: "home",
   data() {
     return {
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -53,180 +46,293 @@ export default {
         des: null,
         cover: null,
       },
-      // 向量模型选项
       modelList: [],
- 
+      carouselImages: [
+        { src: require("@/assets/images/black-globe.png"), alt: "AI Globe" },
+        { src: require("@/assets/images/black-grid.png"), alt: "AI Grid" },
+        { src: require("@/assets/images/black-corridor.png"), alt: "AI Corridor" },
+        { src: require("@/assets/images/black-virtual.png"), alt: "AI Virtual" },
+        { src: require("@/assets/images/black-watch.png"), alt: "AI Watch" },
+      ],
     };
   },
   created() {
-    this.getList()
+    this.getList();
   },
   methods: {
     getList() {
-      listModel(this.queryParams).then(response => {
-        this.modelList = response.rows.map(item => {
+      listModel(this.queryParams).then((response) => {
+        this.modelList = response.rows.map((item) => {
           return {
             ...item,
-           src: `${process.env.VUE_APP_BASE_API}${item.imageUrl}`
-           //src: `http://192.168.16.67/prod-api/${item.imageUrl}`
-          }
+            src: `${process.env.VUE_APP_BASE_API}${item.imageUrl}`,
+          };
         });
       });
     },
-    goTo({baseUrl}) {
-      if(!baseUrl) {
-        this.$modal.msgError('链接地址为空');
+    goTo({ baseUrl }) {
+      if (!baseUrl) {
+        this.$modal.msgError("链接地址为空");
         return;
       }
       window.open(baseUrl);
     },
-  
-  }
+  },
 };
-</script>
+</script>-->
 
 <style scoped lang="scss">
-.home-contianer {
-  height: 100%;
-  width: 100%;
-  background-image: url('../assets/images/hot-flame.png');
-  background-size: cover;
-  background-position: center;
-  padding: 8px 20px;
-
+.ai-home-container {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #181c2a 0%, #232946 100%);
+  color: #fff;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  overflow-x: hidden;
 }
-
-.home-top {
+.ai-header {
+  width: 100vw;
+  padding: 48px 0 24px 0;
+  text-align: center;
+  background: transparent;
+}
+.ai-logo {
   height: 60px;
-  width: 100%;
-  padding: 12px 2px;
+  margin-bottom: 12px;
 }
-
-.left {
-  float: left;
+.ai-title {
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  color: #f7c873;
+  text-shadow: 0 4px 24px #000a, 0 1px 0 #fff2;
 }
-
-.right {
-  float: right;
+.ai-slogan {
+  font-size: 1.4rem;
+  color: #b3b8c5;
+  margin-bottom: 0;
+  letter-spacing: 1px;
 }
-
-.homa-logo{
-  height: 100%;
-  width: 50%;
-}
-
-.home-middle {
-  height: calc(100% - 160px);
-  width: 100%;
+.ai-carousel-section {
+  width: 100vw;
   display: flex;
-  align-items: center;     /* 垂直居中 */
-}
-
-.home-middle-panel{
-  height: 450px;
-  width: 100%;
-}
-
-.homa-detail {
-  text-align: center;
-  color: #94abd0;
-  font-size: 14px;
-}
-
-.homa-middle-logo {
-  width: 100%;
-  height: 160px;
-  display: flex; 
   justify-content: center;
   align-items: center;
-  padding-top: 60px;
+  margin: 0 auto 32px auto;
 }
-
-.homa-middle-logo div{
-  height: 60px;
-  width: 300px;
-  background-image: url('../assets/images/homa-AI.png');
-  background-repeat: no-repeat;
-  background-size: cover;
+.ai-carousel {
+  width: 820px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px 0 #0006;
+  background: #232946;
+}
+.ai-carousel-img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  background: #181c2a;
+  border-radius: 18px;
+}
+.ai-models-section {
+  width: 100vw;
+  padding: 0 0 48px 0;
+  margin-top: 0;
+}
+.ai-models-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f7c873;
   text-align: center;
-  color: #eb6112;
-  font-size: 80px;
-  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
 }
-
-.homa-description {
-  width: 100%;
-  height: 50px;
-  display: flex; 
+.ai-models-panel {
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  font-size: 26px;
-  color: rgb(71 85 105 / var(--tw-text-opacity, 1));
-  font-size: 1.875rem;
-  font-weight: 700;
+  gap: 32px;
 }
-
-.homa-panel {
-  margin-top: 50px;
-  width: 100%;
-  height: 125px;
-  display: flex; 
-  justify-content: center;
-}
-
-.homa-application{
-  width: 360px;
-  height: 100%;
-  background-color: hsla(0, 0%, 100%, .5);
-  margin-left: 40px;
-  border-radius: 8px;
-  padding: 20px 20px;
+.ai-model-card {
+  width: 320px;
+  min-height: 140px;
+  background: rgba(36, 40, 60, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px 0 #0003;
+  display: flex;
+  align-items: center;
+  padding: 24px 20px;
   cursor: pointer;
-  box-shadow: 0 0 0 1px #f1f5f9, 0 2px 4px rgba(0, 0, 0, .05), 0 12px 24px rgba(0, 0, 0, .05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #232946;
 }
-
-.homa-application:nth-child(1){
-  margin-left: 0px;
+.ai-model-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 8px 32px 0 #0006;
+  border: 1px solid #f7c873;
 }
-
-.homa-application-img{
-  width: 80px;
-  height: 100%;
-  display: flex; 
-  justify-content: center;
+.ai-model-img {
+  width: 70px;
+  height: 70px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  margin-right: 18px;
 }
-
-.homa-application-img img{
-  height: 65px;
+.ai-model-img img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #232946;
 }
-
-
-.homa-application-text{
-  width: calc(100% - 90px);
-  height: 100%;
-  margin-left: 10px
+.ai-model-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-
-
-.homa-application-title{
-  height: 40%;
-  width: 100%;
-  color: #4a4a4a;
-  font-size: 20px;
-  line-height: 40px;
-  font-weight: 700;
+.ai-model-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
 }
-.homa-application-content{
-  height: calc(60% - 8px);
-  margin-top: 6px;
-  width: 100%;
-  font-size: 15px;
-  color: #8b8b8b;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.ai-model-desc {
+  font-size: 1rem;
+  color: #b3b8c5;
+  line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+// 移动端适应
+@media (max-width: 768px) {
+  .ai-home-container {
+    padding: 0;
+  }
+
+  .ai-header {
+    padding: 24px 15px 16px 15px;
+    
+    .ai-logo {
+      height: 40px;
+    }
+    
+    .ai-title {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    
+    .ai-slogan {
+      font-size: 1rem;
+    }
+  }
+
+  .ai-carousel-section {
+    margin: 0 auto 20px auto;
+    padding: 0 15px;
+    
+    .ai-carousel {
+      width: 100%;
+      max-width: 100%;
+      
+      .ai-carousel-img {
+        height: 200px;
+      }
+    }
+  }
+
+  .ai-models-section {
+    padding: 0 15px 32px 15px;
+    
+    .ai-models-title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    
+    .ai-models-panel {
+      gap: 15px;
+      
+      .ai-model-card {
+        width: 100%;
+        min-height: 120px;
+        padding: 16px;
+        flex-direction: column;
+        text-align: center;
+        
+        .ai-model-img {
+          margin-right: 0;
+          margin-bottom: 12px;
+          
+          img {
+            width: 50px;
+            height: 50px;
+          }
+        }
+        
+        .ai-model-info {
+          .ai-model-name {
+            font-size: 1rem;
+            margin-bottom: 6px;
+          }
+          
+          .ai-model-desc {
+            font-size: 0.9rem;
+            -webkit-line-clamp: 3;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-home-container {
+    .ai-header {
+      .ai-title {
+        font-size: 1.8rem;
+      }
+      
+      .ai-slogan {
+        font-size: 0.9rem;
+      }
+    }
+    
+    .ai-carousel-section {
+      .ai-carousel {
+        .ai-carousel-img {
+          height: 150px;
+        }
+      }
+    }
+    
+    .ai-models-section {
+      .ai-model-card {
+        min-height: 100px;
+        padding: 12px;
+        
+        .ai-model-img img {
+          width: 40px;
+          height: 40px;
+        }
+        
+        .ai-model-info {
+          .ai-model-name {
+            font-size: 0.9rem;
+          }
+          
+          .ai-model-desc {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
 }
 </style>
 

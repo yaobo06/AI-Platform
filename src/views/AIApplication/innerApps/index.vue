@@ -1,50 +1,172 @@
 <template>
-  <div class="home-contianer">
-    <div class="home-bottom">
-      <div class="function-pannel">
-        <div class="function-pannel-title">
-          <div class="function-pannel-title-left">
-            <span>奥马应用</span>
-          </div>
-          <div class="function-pannel-title-right">
+  <div class="app-container">
+    <!-- <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="关联模型" prop="modelId">
+        <el-input
+          v-model="queryParams.modelId"
+          placeholder="请输入关联模型"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="封面" prop="cover">
+        <el-input
+          v-model="queryParams.cover"
+          placeholder="请输入封面"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="名称" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="描述" prop="des">
+        <el-input
+          v-model="queryParams.des"
+          placeholder="请输入描述"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="保存时间" prop="saveTime">
+        <el-date-picker clearable
+          v-model="queryParams.saveTime"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="请选择保存时间">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form> -->
+    <el-row :gutter="10" class="list mb8" type="flex">
+<!--      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4">
+        <div class="card add" @click="handleAdd">
+          <div class="title">创建应用</div>
+          <div class="content">
+            <svg-icon icon-class="edit" />
+            创建空白应用
           </div>
         </div>
-        <div class="function-pannel-content">
-          <div class="pannel-item-row" v-for="(applicationRow, index) in applicationList" :key="index">
-            <div class="pannel-item" v-for="(application, num) in applicationRow" :key="num" @click.stop="goTo(application)">
-              <div class="pannel-item-left">
-                <svg-icon v-if="!application.cover" icon-class="documentation" />
-                <img v-else :src="application.src" alt="" />
-              </div>
-              <div class="pannel-item-right">
-                <div class="pannel-item-title" :title="application.name" >{{application.name}}</div>
-                <div class="pannel-item-content" :title="application.des" v-if="application.des"><img src="../../../assets/images/flame.png">
-                  <span>&nbsp;{{application.des}}s</span></div>
-              </div>
+      </el-col>-->
+      <el-col :xs="10" :sm="8" :md="6" :lg="6" :xl="4" v-for="(item) in appList" :key="item.id">
+        <div class="card edit" @click.stop="goTo(item)">
+          <div class="content">
+            <div class="img">
+              <svg-icon v-if="!item.cover" icon-class="documentation" />
+              <img v-else :src="item.src" alt="" />
+            </div>
+            <div class="context">
+              <div class="title">{{ item.name }}</div>
+              <div class="desc">{{ item.des }}</div>
             </div>
           </div>
+<!--          <div class="footer">
+            <div class="left">
+            </div>
+&lt;!&ndash;            <div class="right" @click.stop>
+              <el-dropdown trigger="click" @command="(methodName) => {
+                handleCommand(methodName, item);
+              }">
+                <el-button class="more-btn" type="text" size="mini" icon="el-icon-more"></el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item icon="el-icon-edit" command="handleUpdate">编辑此应用</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-delete" command="handleDelete">删除此应用</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>&ndash;&gt;
+          </div>-->
         </div>
-      </div>
-    </div>
-  </div>
+      </el-col>
+    </el-row>
 
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改提示词对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="应用名称" prop="name" required :rules="[{required: true, message: '请输入应用名称', trigger: 'blur'}]">
+          <el-input v-model="form.name" type="text" maxlength="20" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="关联模型" prop="modelId" required :rules="[{required: true, message: '请选择关联模型', trigger: 'blur'}]">
+          <el-select v-model="form.modelId" remote :loading="modelsLoading" :remote-method="modelsRemoteMethod" filterable placeholder="请选择" style="width: 100%;">
+            <el-option
+              v-for="item in models || []"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="应用封面" prop="cover">
+          <ImageUpload v-model="form.cover" :limit="1"/>
+        </el-form-item>
+        <el-form-item label="链接地址" prop="appUrl" required :rules="[{required: true, message: '请输入链接地址', trigger: 'blur'}, {validator: (rule, value, callback) => {
+          /^http/.test(value) ? callback() : callback('请输入http链接地址');
+        }, message: '请输入http链接地址', trigger: 'blur'}]">
+          <el-input v-model="form.appUrl" type="text" maxlength="300" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="应用描述" prop="des">
+          <el-input v-model="form.des" type="textarea" rows="3" maxlength="300" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="应用类型">
+          <el-select v-model="form.type" placeholder="请选择类型">
+            <el-option v-for="dict in dict.type.app_type" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-import { listApp, getModels} from "@/views/AIApplication/applications/app";
+import { listApp, getApp, delApp, addApp, updateApp, getModels } from "./app";
+
 export default {
-  name: "Index",
+  name: "App",
+  dicts: ['app_type'],
   data() {
     return {
-      // 版本号
-      version: "3.8.9",
-      applicationList: [],
-      applicationNav: [],
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
       total: 0,
+      // 提示词表格数据
+      appList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        type: 99,
         modelId: null,
         knowledgeIds: null,
         cover: null,
@@ -52,368 +174,257 @@ export default {
         prompt: null,
         des: null,
         saveTime: null,
-        type: null
       },
-      topCards:[],
-      carousel:[],
-      rowNum: 4,
-      applicationTypes: [{
-        key: '0',
-        label: '轮播',
-        section: 'top'
-      },{
-        key: '1',
-        label: '导航栏',
-        section: 'mid'
-      },{
-        key: '2',
-        label: '热门',
-        section: 'buttom'
-      }],
-      activeType: '99',
-      className: ''
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+      },
+      // 模型选项
+      models: [],
+      getModelsTimer: null,
+      modelsLoading: false
     };
   },
-  created() {
-    this.getList()
-    this.getApplicationNav()
-    this.getApplicationTop()
+  watch: {
+    open(n) {
+      if(!n) return;
+      this.modelsRemoteMethod("", true);
+    }
   },
-  mounted(){
-    // this.getApplicationTop()
+  created() {
+    this.getList();
+    this.modelsRemoteMethod();
   },
   methods: {
-    goTarget(href) {
-      window.open(href, "_blank");
-    },
-    selectType(key){
-      this.activeType = key
-      this.getList()
-    },
-    getTypeClass(key){
-      if(key == this.activeType){
-        return 'function-pannel-type-label active-label'
-      }
-      return 'function-pannel-type-label'
-    },
-    getList() {
-      this.queryParams.type = this.activeType
-      listApp(this.queryParams).then(response => {
-        this.total = response.total;
-        this.applicationList = this.formatResult(response.rows)
-      });
-    },
-    getApplicationTop(){
-      this.queryParams.type = '0'
-      listApp(this.queryParams).then(response => {
-        let responseData = response.rows || []
-        responseData.forEach(item => {
-          this.appendIconSrc(item)
-        })
-        this.topCards = responseData
-      });
-    },
-    getApplicationNav(){
-      this.queryParams.type = '1'
-      listApp(this.queryParams).then(response => {
-        this.total = response.total;
-        let responseData = response.rows || []
-        let length = responseData.length
-        this.applicationNav = []
-        for (let i = 0; i < 4; i++) {
-          if (i < length) {
-            this.appendIconSrc(responseData[i])
-            this.applicationNav.push(responseData[i])
-          } else {
-            this.applicationNav.push([])
-          }
-        }
-      });
-    },
-    appendIconSrc(element) {
-      Object.assign(element, {
-        'src': process.env.VUE_APP_BASE_API + element.cover
-      })
-    },
-    formatResult(responseData) {
-      if (!responseData || responseData.length == 0) {
-        return []
-      }
-      let applicationGrid = []
-      let applicationRow = []
-      responseData.forEach(element => {
-        this.appendIconSrc(element)
-        if (applicationRow.length == this.rowNum) {
-          applicationGrid.push([...applicationRow])
-          applicationRow = []
-        }
-        applicationRow.push(element)
-      });
-      if (applicationRow.length > 0) {
-        applicationGrid.push([...applicationRow])
-      }
-      return applicationGrid
-    },
-    goTo({ appUrl }) {
-      if (!appUrl) {
+    goTo({appUrl}) {
+      if(!appUrl) {
         this.$modal.msgError('链接地址为空');
         return;
       }
       window.open(appUrl);
     },
+    // 获取模型
+    modelsRemoteMethod(str, immediate = false) {
+      this.getModelsTimer && clearTimeout(this.getModelsTimer);
+      this.getModelsTimer = setTimeout(() => {
+        this.modelsLoading = true;
+        getModels(str).then(res => {
+          this.models = res.data;
+        }).catch(() => {
+          this.models = [];
+        }).finally(() => {
+          this.modelsLoading = false;
+        });
+      }, immediate ? 0 : 800);
+
+
+    },
+    /** 查询提示词列表 */
+    getList() {
+      // console.log(888,process.env.VUE_APP_BASE_API)
+      this.loading = true;
+      listApp(this.queryParams).then(response => {
+        this.appList = response.rows.map(item => {
+          return {
+            ...item,
+            src: `${process.env.VUE_APP_BASE_API}${item.cover}`
+          }
+        });
+        console.log(888, this.appList)
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: null,
+        modelId: null,
+        knowledgeIds: null,
+        cover: null,
+        name: null,
+        prompt: null,
+        des: null,
+        saveTime: null,
+        createTime: null
+      };
+      this.resetForm("form");
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length!==1
+      this.multiple = !selection.length
+    },
+    handleCommand(methodName, item) {
+      this[methodName](item);
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加第三方应用";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids
+      getApp(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改第三方应用";
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          if (this.form.id != null) {
+            updateApp(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addApp(this.form).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$modal.confirm('是否确认删除提示词编号为"' + ids + '"的数据项？').then(function() {
+        return delApp(ids);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('system/app/export', {
+        ...this.queryParams
+      }, `app_${new Date().getTime()}.xlsx`)
+    }
   }
 };
 </script>
+<style lang="scss" scoped>
+.app-container {
+  .list {
+    flex-wrap: wrap;
+    .el-col {
+      margin-top: 10px;
+    }
+  }
+  .card {
+    border: 1px solid #DCDFE6;
+    border-radius: 8px;
+    padding: 10px 14px 0px 14px;
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 100px;
+    cursor: pointer;
+    transition: all 0.3s;
 
-<style scoped lang="scss">
+    &:hover {
+      box-shadow: 0px 0px 4px 4px #f1f1f1;
+    }
+    &.add {
+      background-color: #F3F4F6;
 
-.home-contianer {
-  height: 100%;
-  width: 100%;
-  margin-top: 8px;
-  background: #f5f5f5;
+      .title {
+        font-size: 16px;
+        color: #6B7280;
+        font-weight: bold;
+      }
+      .content {
+        font-size: 14px;
+        color: #333639;
+        margin-top: 14px;
+      }
+    }
+    &.edit {
+      display: flex;
+      flex-direction: column;
+      .content {
+        flex-grow: 1;
+        // width: 0px;
+        width: 100%;
+        display: flex;
+        .img {
+          width: 70px;
+          height: 70px;
+          color: #333639;
+          font-size: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #DBEAFE;
+          border-radius: 8px;
+          overflow: hidden;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .context {
+          margin-left: 14px;
+          flex-grow: 1;
+          width: 0px;
+          .title {
+            font-size: 16px;
+            color: #374151;
+            font-weight: bold;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          .desc {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #6B7280;
+            display: -webkit-box; /* 将对象作为弹性伸缩盒子模型显示 */
+            -webkit-box-orient: vertical; /* 设置或检索伸缩盒对象的子元素的排列方式 */
+            -webkit-line-clamp: 3; /* 限制显示的文本行数 */
+            overflow: hidden; /* 隐藏超出的内容 */
+            text-overflow: ellipsis; /* 使用省略号表示被修剪的文本 */
+          }
+        }
+      }
+      .footer {
+        display: flex;
+        .left {
+          flex: 1;
+        }
+        .right {
+          .more-btn {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+  }
 }
-
-.home-top {
-  height: 225px;
-  width: calc(100% - 50px);
-  margin: 0px 15px 10px 25px;
-  background: #ffffff;
-  border-radius: 8px;
-}
-
-.carousel {
-  overflow: hidden; /* 隐藏溢出部分 */
-  white-space: nowrap; /* 防止子元素换行 */
-}
-
-.carousel-inner {
-  display: flex; /* 使用flex布局 */
-  transition: transform 0.5s ease; /* 平滑过渡效果 */
-}
-
-.carousel-item {
-  display: inline-block; /* 让项目横向排列 */
-  width: 30%; /* 根据需要调整宽度 */
-}
-
-.home-middle {
-  height: 140px;
-  width: calc(100% - 50px);
-  margin-left: 25px;
-  margin-top: 16px;
-  border-radius: 8px;
-  background: #ffffff;
-}
-
-.home-middle-title {
-  font-size: 20px;
-  font-weight: 700;
-  height: 48px;
-  padding-top: 8px;
-  line-height: 36px;
-  width: 100%;
-  padding-left: 16px;
-  border-bottom: 1px solid #e6ebf5;
-}
-
-.home-middle-panel {
-  margin-top: 16px;
-  height: calc(100% - 56px);
-  width: 100%;
-}
-
-
-.home-middle-item {
-  height: 100%;
-  margin-left: 16px;
-  width: calc(25% - 19px);
-  float: left;
-  background: #fff;
-  padding: 2px 5px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.home-middle-item-left {
-  height: 100%;
-  width: 75%;
-  float: left;
-  padding-left: 10px;
-}
-
-.home-middle-item-right {
-  height: 100%;
-  width: 25%;
-  float: left;
-  display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: right; /* 水平居中，如果需要的话 */
-  padding-right: 12px;
-}
-
-.home-middle-item-right img {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-}
-
-.home-middle-item-title {
-  font-size: 16px;
-  font-weight: 700;
-  height: 35%;
-  width: 100%;
-  padding-top: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.home-middle-item-context {
-  font-size: 12px;
-  font-weight: 400;
-  height: 60%;
-  color: #999999;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-}
-
-.home-bottom {
-  height: calc(100% - 205px);
-  width: calc(100% - 50px);
-  margin: 20px 15px 10px 25px;
-}
-
-.function-pannel {
-  background: #ffffff;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-.function-pannel-title {
-  width: 100%;
-  height: 50px;
-  border-bottom: 1px solid #e6ebf5;
-}
-
-.function-pannel-title-left {
-  font-size: 20px;
-  float: left;
-  font-weight: 700;
-  width: calc(90% - 50px);
-  height: 100%;
-  display: flex;
-  align-items: center; /* 垂直居中 */
-  padding-left: 16px;
-}
-
-.function-pannel-title-right {
-  font-size: 14px;
-  float: right;
-  width: calc(10% + 10px);
-  color: #999999;
-  padding-top: 15px;
-}
-
-.function-pannel-title-right span {
-  float: right;
-  padding-right: 18px;
-}
-
-.function-pannel-type {
-  height: 28px;
-  width: 100%;
-  padding-left: 16px;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 28px;
-}
-
-.function-pannel-type-label {
-  height: 100%;
-  width: 60px;
-  background: #f2f2f2;
-  border-radius: 16px;
-  float: left;
-  margin-left: 12px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.function-pannel-type-label:first-of-type {
-  margin-left: 0px;
-}
-
-.active-label {
-  background-color: #0a59f7 !important;
-  color: #ffffff;
-}
-
-.function-pannel-content {
-  height: 270px;
-  width: 100%;
-}
-
-.pannel-item-row {
-  width: 100%;
-  height: 80px;
-  padding-top: 12px;
-}
-
-.pannel-item {
-  width: calc(25% - 1px);
-  height: 70px;
-  float: left;
-  cursor: pointer;
-}
-
-.pannel-item-left {
-  width: 80px;
-  height: 100%;
-  float: left;
-  display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中，如果需要的话 */
-}
-
-.pannel-item-left img {
-  height: 55px;
-  width: 55px;
-  border-radius: 12px;
-}
-
-.pannel-item-right {
-  width: calc(100% - 80px);
-  height: 100%;
-  float: left;
-}
-
-.pannel-item-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.pannel-item-content {
-  font-size: 14px;
-  color: #939393;
-  margin-top: 2px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-.pannel-item-content img {
-  margin-top: 1px;
-}
-
-::v-deep .el-carousel__indicators--outside {
-  display: none
-}
-
 </style>
-

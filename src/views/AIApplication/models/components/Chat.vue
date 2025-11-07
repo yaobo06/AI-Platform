@@ -428,4 +428,175 @@ export default {
     width: 0px;
   }
 }
+
+// 移动端适应
+@media (max-width: 768px) {
+  .cm-chat-container {
+    flex-direction: column;
+    
+    .nav-list-box {
+      width: 100%;
+      height: auto;
+      padding: 15px;
+      
+      .title {
+        font-size: 15px;
+        margin-bottom: 10px;
+      }
+      
+      .nav-list {
+        height: auto;
+        max-height: 150px;
+        margin-top: 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        
+        .nav-item {
+          display: inline-block;
+          margin: 2px 4px;
+          padding: 6px 12px;
+          border-radius: 4px;
+          font-size: 13px;
+          white-space: nowrap;
+          border: 1px solid #e0e0e0;
+          
+          &.active {
+            background-color: #f1883d;
+            color: white;
+            border-color: #f1883d;
+            border-left: 1px solid #f1883d;
+          }
+          
+          &:hover {
+            background-color: #f0f0f0;
+          }
+        }
+      }
+    }
+    
+    .main {
+      width: 100%;
+      padding: 0 15px;
+      
+      .mb8 {
+        .el-col {
+          margin-bottom: 8px;
+          
+          .el-button {
+            width: 100%;
+            font-size: 13px;
+          }
+        }
+      }
+      
+      .el-table {
+        .el-table__header-wrapper,
+        .el-table__body-wrapper {
+          overflow-x: auto;
+        }
+        
+        .el-table__body {
+          .cell {
+            word-break: break-all;
+            white-space: normal;
+          }
+        }
+        
+        .small-padding.fixed-width {
+          width: 100px;
+          
+          .el-button {
+            padding: 2px 4px;
+            margin: 1px;
+            font-size: 11px;
+          }
+        }
+      }
+    }
+  }
+  
+  // 对话框适应
+  .el-dialog {
+    width: 95% !important;
+    margin: 20px auto !important;
+    
+    .el-form {
+      .el-form-item {
+        margin-bottom: 15px;
+        
+        .el-form-item__label {
+          width: 80px;
+          font-size: 13px;
+        }
+        
+        .el-form-item__content {
+          margin-left: 80px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .cm-chat-container {
+    .nav-list-box {
+      padding: 10px;
+      
+      .title {
+        font-size: 14px;
+      }
+      
+      .nav-list {
+        .nav-item {
+          font-size: 12px;
+          padding: 4px 8px;
+          margin: 2px;
+        }
+      }
+    }
+    
+    .main {
+      padding: 0 10px;
+      
+      .mb8 {
+        .el-col {
+          .el-button {
+            font-size: 12px;
+            padding: 6px 12px;
+          }
+        }
+      }
+      
+      .el-table {
+        font-size: 12px;
+        
+        .small-padding.fixed-width {
+          width: 80px;
+          
+          .el-button {
+            padding: 1px 3px;
+            font-size: 10px;
+          }
+        }
+      }
+    }
+  }
+  
+  .el-dialog {
+    .el-form {
+      .el-form-item {
+        .el-form-item__label {
+          width: 70px;
+          font-size: 12px;
+        }
+        
+        .el-form-item__content {
+          margin-left: 70px;
+        }
+      }
+    }
+  }
+}
 </style>

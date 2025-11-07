@@ -66,6 +66,27 @@ export const constantRoutes = [
     component: () => import('@/views/introduction'),
     hidden: true
   },
+
+  {
+    path: '/forum',
+    component: () => import('@/views/forum/index'),
+    hidden: true
+  },
+  {
+    path: '/forum/post/:id',
+    component: () => import('@/views/forum/post'),
+    hidden: true
+  },
+  {
+    path: '/forum/test',
+    component: () => import('@/views/forum/test'),
+    hidden: true
+  },
+  {
+    path: '/ai-models',
+    component: () => import('@/views/ai-models/index'),
+    hidden: true
+  },
   {
     path: '',
     component: Layout,

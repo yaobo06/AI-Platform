@@ -21,12 +21,9 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 #app .theme-picker {
   display: none;
-}
-::v-deep .el-dialog__body {
-  max-height: 80vh !important;
-  overflow-y: auto;
 }
 </style>
