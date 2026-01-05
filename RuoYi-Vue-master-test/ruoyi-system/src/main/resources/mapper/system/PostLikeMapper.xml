@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PostLikeMapper">
+    
+    <resultMap type="PostLike" id="PostLikeResult">
+        <result property="id"    column="id"    />
+        <result property="postId"    column="post_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createdAt"    column="created_at"    />
+    </resultMap>
+
+    <select id="selectPostLike" resultMap="PostLikeResult">
+        select id, post_id, user_id, created_at
+        from post_likes
+        where post_id = #{postId} and user_id = #{userId}
+        limit 1
+    </select>
+        
+    <insert id="insertPostLike" parameterType="PostLike" useGeneratedKeys="true" keyProperty="id">
+        insert into post_likes
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postId != null">post_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createdAt != null">created_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="postId != null">#{postId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+         </trim>
+    </insert>
+
+    <delete id="deletePostLikeById" parameterType="Long">
+        delete from post_likes where id = #{id}
+    </delete>
+
+    <delete id="deletePostLike">
+        delete from post_likes where post_id = #{postId} and user_id = #{userId}
+    </delete>
+
+    <select id="selectPostLikesByUserId" parameterType="Long" resultMap="PostLikeResult">
+        select id, post_id, user_id, created_at
+        from post_likes
+        where user_id = #{userId}
+        order by created_at desc
+    </select>
+</mapper>
+

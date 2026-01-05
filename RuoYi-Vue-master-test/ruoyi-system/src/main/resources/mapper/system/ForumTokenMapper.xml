@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ForumTokenMapper">
+    
+    <resultMap type="ForumToken" id="ForumTokenResult">
+        <result property="tokenId"    column="token_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="token"    column="token"    />
+        <result property="expireTime"    column="expire_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectForumTokenVo">
+        select token_id, user_id, token, expire_time, create_time, update_time from forum_token
+    </sql>
+
+    <insert id="insertForumToken" parameterType="ForumToken" useGeneratedKeys="true" keyProperty="tokenId">
+        insert into forum_token
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="token != null and token != ''">token,</if>
+            <if test="expireTime != null">expire_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="token != null and token != ''">#{token},</if>
+            <if test="expireTime != null">#{expireTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <select id="selectUserIdByToken" parameterType="String" resultType="Long">
+        select user_id from forum_token 
+        where token = #{token} and expire_time > now()
+    </select>
+
+    <select id="selectForumTokenByToken" parameterType="String" resultMap="ForumTokenResult">
+        <include refid="selectForumTokenVo"/>
+        where token = #{token}
+    </select>
+
+    <delete id="deleteExpiredTokens" parameterType="Date">
+        delete from forum_token where expire_time &lt; #{expireTime}
+    </delete>
+
+    <delete id="deleteTokensByUserId" parameterType="Long">
+        delete from forum_token where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteTokenByToken" parameterType="String">
+        delete from forum_token where token = #{token}
+    </delete>
+
+</mapper>
+

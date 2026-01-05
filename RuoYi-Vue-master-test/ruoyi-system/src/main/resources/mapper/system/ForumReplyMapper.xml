@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ForumReplyMapper">
+    
+    <resultMap type="ForumReply" id="ForumReplyResult">
+        <result property="replyId"    column="reply_id"    />
+        <result property="postId"    column="post_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="content"    column="content"    />
+        <result property="likeCount"    column="like_count"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="userName"    column="user_name"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="avatar"    column="avatar"    />
+        <collection property="children" ofType="ForumReply" select="selectChildrenByParentId" column="reply_id"/>
+    </resultMap>
+
+    <sql id="selectForumReplyVo">
+        select r.reply_id, r.post_id, r.user_id, r.parent_id, r.content, r.like_count, r.status, r.create_by, r.create_time, r.update_by, r.update_time, r.remark,
+        u.user_name, u.nick_name, u.avatar
+        from forum_reply r
+        left join sys_user u on r.user_id = u.user_id
+    </sql>
+
+    <select id="selectForumReplyList" parameterType="ForumReply" resultMap="ForumReplyResult">
+        <include refid="selectForumReplyVo"/>
+        <where>  
+            <if test="postId != null "> and r.post_id = #{postId}</if>
+            <if test="userId != null "> and r.user_id = #{userId}</if>
+            <if test="parentId != null "> and r.parent_id = #{parentId}</if>
+            <if test="content != null  and content != ''"> and r.content like concat('%', #{content}, '%')</if>
+            <if test="status != null  and status != ''"> and r.status = #{status}</if>
+        </where>
+        order by r.create_time asc
+    </select>
+
+    <select id="selectForumReplyTreeByPostId" parameterType="Long" resultMap="ForumReplyResult">
+        <include refid="selectForumReplyVo"/>
+        where r.post_id = #{postId} and r.parent_id = 0 and r.status = '0'
+        order by r.create_time asc
+    </select>
+
+    <select id="selectChildrenByParentId" parameterType="Long" resultMap="ForumReplyResult">
+        <include refid="selectForumReplyVo"/>
+        where r.parent_id = #{replyId} and r.status = '0'
+        order by r.create_time asc
+    </select>
+    
+    <select id="selectForumReplyByReplyId" parameterType="Long" resultMap="ForumReplyResult">
+        <include refid="selectForumReplyVo"/>
+        where r.reply_id = #{replyId}
+    </select>
+        
+    <insert id="insertForumReply" parameterType="ForumReply" useGeneratedKeys="true" keyProperty="replyId">
+        insert into forum_reply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postId != null">post_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="likeCount != null">like_count,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="postId != null">#{postId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="likeCount != null">#{likeCount},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateForumReply" parameterType="ForumReply">
+        update forum_reply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="likeCount != null">like_count = #{likeCount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where reply_id = #{replyId}
+    </update>
+
+    <delete id="deleteForumReplyByReplyId" parameterType="Long">
+        delete from forum_reply where reply_id = #{replyId}
+    </delete>
+
+    <delete id="deleteForumReplyByReplyIds" parameterType="String">
+        delete from forum_reply where reply_id in 
+        <foreach item="replyId" collection="array" open="(" separator="," close=")">
+            #{replyId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteForumReplyByPostId" parameterType="Long">
+        delete from forum_reply where post_id = #{postId}
+    </delete>
+
+    <update id="increaseLikeCount" parameterType="Long">
+        update forum_reply set like_count = like_count + 1 where reply_id = #{replyId}
+    </update>
+
+    <update id="decreaseLikeCount" parameterType="Long">
+        update forum_reply set like_count = like_count - 1 where reply_id = #{replyId} and like_count > 0
+    </update>
+</mapper>

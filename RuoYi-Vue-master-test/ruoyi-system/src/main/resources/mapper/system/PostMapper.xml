@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PostMapper">
+    
+    <resultMap type="Post" id="PostResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="category"    column="category"    />
+        <result property="likeCount"    column="like_count"    />
+        <result property="commentCount"    column="comment_count"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="updatedAt"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectPostVo">
+        select id, user_id, title, content, category, like_count, comment_count, created_at, updated_at
+        from posts
+    </sql>
+
+    <select id="selectPostList" parameterType="Post" resultMap="PostResult">
+        <include refid="selectPostVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="content != null  and content != ''"> and content like concat('%', #{content}, '%')</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+        </where>
+        order by created_at desc
+    </select>
+    
+    <select id="selectPostById" parameterType="Long" resultMap="PostResult">
+        <include refid="selectPostVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectPostByIds" parameterType="java.util.List" resultMap="PostResult">
+        <include refid="selectPostVo"/>
+        where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+        
+    <insert id="insertPost" parameterType="Post" useGeneratedKeys="true" keyProperty="id">
+        insert into posts
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null">content,</if>
+            <if test="category != null">category,</if>
+            <if test="likeCount != null">like_count,</if>
+            <if test="commentCount != null">comment_count,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="category != null">#{category},</if>
+            <if test="likeCount != null">#{likeCount},</if>
+            <if test="commentCount != null">#{commentCount},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePost" parameterType="Post">
+        update posts
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="likeCount != null">like_count = #{likeCount},</if>
+            <if test="commentCount != null">comment_count = #{commentCount},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePostById" parameterType="Long">
+        delete from posts where id = #{id}
+    </delete>
+
+    <delete id="deletePostByIds" parameterType="String">
+        delete from posts where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="increaseCommentCount">
+        update posts set comment_count = comment_count + #{delta}, updated_at = now()
+        where id = #{id}
+    </update>
+
+    <select id="selectPostListByKeyword" resultMap="PostResult">
+        <include refid="selectPostVo"/>
+        where (title like concat('%', #{keyword}, '%') or content like concat('%', #{keyword}, '%'))
+        order by created_at desc
+        limit #{limit}
+    </select>
+
+    <select id="countPosts" resultType="long">
+        select count(*) from posts
+    </select>
+
+    <select id="countDistinctUsers" resultType="long">
+        select count(distinct user_id) from posts
+    </select>
+
+    <!-- 统计热门标签：从帖子标题和内容中提取常见关键词 -->
+    <!-- 这里使用简单的关键词匹配，实际项目中可以使用更复杂的NLP技术 -->
+    <select id="selectHotTags" resultType="map">
+        SELECT 
+            tag_name as name,
+            COUNT(*) as count
+        FROM (
+            SELECT 'ChatGPT' as tag_name FROM posts WHERE (title LIKE '%ChatGPT%' OR content LIKE '%ChatGPT%')
+            UNION ALL
+            SELECT 'Stable Diffusion' as tag_name FROM posts WHERE (title LIKE '%Stable Diffusion%' OR content LIKE '%Stable Diffusion%' OR title LIKE '%StableDiffusion%' OR content LIKE '%StableDiffusion%')
+            UNION ALL
+            SELECT 'Midjourney' as tag_name FROM posts WHERE (title LIKE '%Midjourney%' OR content LIKE '%Midjourney%')
+            UNION ALL
+            SELECT 'Claude' as tag_name FROM posts WHERE (title LIKE '%Claude%' OR content LIKE '%Claude%')
+            UNION ALL
+            SELECT 'Gemini' as tag_name FROM posts WHERE (title LIKE '%Gemini%' OR content LIKE '%Gemini%')
+            UNION ALL
+            SELECT 'GPT-4' as tag_name FROM posts WHERE (title LIKE '%GPT-4%' OR content LIKE '%GPT-4%' OR title LIKE '%GPT4%' OR content LIKE '%GPT4%')
+            UNION ALL
+            SELECT 'DALL-E' as tag_name FROM posts WHERE (title LIKE '%DALL-E%' OR content LIKE '%DALL-E%' OR title LIKE '%DALLE%' OR content LIKE '%DALLE%')
+            UNION ALL
+            SELECT 'OpenAI' as tag_name FROM posts WHERE (title LIKE '%OpenAI%' OR content LIKE '%OpenAI%')
+            UNION ALL
+            SELECT 'AI绘画' as tag_name FROM posts WHERE (title LIKE '%AI绘画%' OR content LIKE '%AI绘画%' OR title LIKE '%AI 绘画%' OR content LIKE '%AI 绘画%')
+            UNION ALL
+            SELECT '机器学习' as tag_name FROM posts WHERE (title LIKE '%机器学习%' OR content LIKE '%机器学习%')
+            UNION ALL
+            SELECT '深度学习' as tag_name FROM posts WHERE (title LIKE '%深度学习%' OR content LIKE '%深度学习%')
+            UNION ALL
+            SELECT '神经网络' as tag_name FROM posts WHERE (title LIKE '%神经网络%' OR content LIKE '%神经网络%')
+            UNION ALL
+            SELECT '自然语言处理' as tag_name FROM posts WHERE (title LIKE '%自然语言处理%' OR content LIKE '%自然语言处理%' OR title LIKE '%NLP%' OR content LIKE '%NLP%')
+            UNION ALL
+            SELECT '计算机视觉' as tag_name FROM posts WHERE (title LIKE '%计算机视觉%' OR content LIKE '%计算机视觉%' OR title LIKE '%CV%' OR content LIKE '%CV%')
+            UNION ALL
+            SELECT '大模型' as tag_name FROM posts WHERE (title LIKE '%大模型%' OR content LIKE '%大模型%' OR title LIKE '%LLM%' OR content LIKE '%LLM%')
+        ) AS tag_matches
+        GROUP BY tag_name
+        ORDER BY count DESC
+        LIMIT #{limit}
+    </select>
+</mapper>
+

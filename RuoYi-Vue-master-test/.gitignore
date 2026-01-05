@@ -1,0 +1,71 @@
+######################################################################
+# Build Tools
+
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+######################################################################
+# IDE
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### JRebel ###
+rebel.xml
+
+### NetBeans ###
+nbproject/private/
+build/*
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+######################################################################
+# Configuration Files (包含敏感信息)
+*.yml
+*.yaml
+!pom.xml
+!*.yml.example
+!*.yaml.example
+# 允许 docker-compose 文件（通常不包含敏感信息）
+!docker-compose*.yml
+
+######################################################################
+# Others
+*.log
+*.log.*
+**/*.log
+logs/
+**/logs/
+*.pid
+embedding.log
+embedding_service.log
+*.xml.versionsBackup
+*.swp
+
+# ============================================
+# 数据目录
+# ============================================
+milvus-data/
+redis-data/
+uploadPath/
+
+!*/build/*.java
+!*/build/*.html
+!*/build/*.xml

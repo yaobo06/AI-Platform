@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ForumLikeMapper">
+    
+    <resultMap type="ForumLike" id="ForumLikeResult">
+        <result property="likeId"    column="like_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="targetType"    column="target_type"    />
+        <result property="targetId"    column="target_id"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectForumLikeVo">
+        select like_id, user_id, target_type, target_id, create_time from forum_like
+    </sql>
+
+    <select id="selectForumLikeList" parameterType="ForumLike" resultMap="ForumLikeResult">
+        <include refid="selectForumLikeVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="targetType != null  and targetType != ''"> and target_type = #{targetType}</if>
+            <if test="targetId != null "> and target_id = #{targetId}</if>
+        </where>
+    </select>
+    
+    <select id="selectForumLikeByLikeId" parameterType="Long" resultMap="ForumLikeResult">
+        <include refid="selectForumLikeVo"/>
+        where like_id = #{likeId}
+    </select>
+
+    <select id="selectForumLikeByUserAndTarget" resultMap="ForumLikeResult">
+        <include refid="selectForumLikeVo"/>
+        where user_id = #{userId} and target_type = #{targetType} and target_id = #{targetId}
+    </select>
+        
+    <insert id="insertForumLike" parameterType="ForumLike" useGeneratedKeys="true" keyProperty="likeId">
+        insert into forum_like
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="targetType != null">target_type,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="targetType != null">#{targetType},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateForumLike" parameterType="ForumLike">
+        update forum_like
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="targetType != null">target_type = #{targetType},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+        </trim>
+        where like_id = #{likeId}
+    </update>
+
+    <delete id="deleteForumLikeByLikeId" parameterType="Long">
+        delete from forum_like where like_id = #{likeId}
+    </delete>
+
+    <delete id="deleteForumLikeByLikeIds" parameterType="String">
+        delete from forum_like where like_id in 
+        <foreach item="likeId" collection="array" open="(" separator="," close=")">
+            #{likeId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteForumLikeByUserAndTarget">
+        delete from forum_like where user_id = #{userId} and target_type = #{targetType} and target_id = #{targetId}
+    </delete>
+</mapper>
