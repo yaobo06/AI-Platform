@@ -2,13 +2,25 @@
  * 设备检测工具函数
  */
 
+export const BREAKPOINTS = Object.freeze({
+  MINI_MOBILE: 320,
+  SMALL_MOBILE: 375,
+  LARGE_MOBILE: 414,
+  MOBILE: 768,
+  TABLET: 1024
+});
+
 /**
  * 检测是否为移动设备
  * @returns {boolean}
  */
 export function isMobile() {
-  const userAgent = navigator.userAgent;
-  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  if (navigator.userAgentData && typeof navigator.userAgentData.mobile === 'boolean') {
+    return navigator.userAgentData.mobile;
+  }
+
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const mobileRegex = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile Safari/i;
   return mobileRegex.test(userAgent);
 }
 
@@ -35,7 +47,7 @@ export function isDesktop() {
  * @returns {number}
  */
 export function getScreenWidth() {
-  return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  return Math.round(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
 }
 
 /**
@@ -51,7 +63,10 @@ export function getScreenHeight() {
  * @returns {boolean}
  */
 export function isMobileScreen() {
-  return getScreenWidth() <= 768;
+  if (window.matchMedia) {
+    return window.matchMedia(`(max-width: ${BREAKPOINTS.MOBILE}px)`).matches;
+  }
+  return getScreenWidth() <= BREAKPOINTS.MOBILE;
 }
 
 /**
@@ -60,7 +75,7 @@ export function isMobileScreen() {
  */
 export function isTabletScreen() {
   const width = getScreenWidth();
-  return width > 768 && width <= 1024;
+  return width > BREAKPOINTS.MOBILE && width <= BREAKPOINTS.TABLET;
 }
 
 /**
@@ -75,6 +90,36 @@ export function getDeviceType() {
   } else {
     return 'desktop';
   }
+}
+
+/**
+ * 获取当前屏幕断点
+ * @returns {string}
+ */
+export function getScreenBreakpoint() {
+  const width = getScreenWidth();
+
+  if (width <= BREAKPOINTS.MINI_MOBILE) {
+    return 'mini-mobile';
+  }
+
+  if (width <= BREAKPOINTS.SMALL_MOBILE) {
+    return 'small-mobile';
+  }
+
+  if (width <= BREAKPOINTS.LARGE_MOBILE) {
+    return 'large-mobile';
+  }
+
+  if (width <= BREAKPOINTS.MOBILE) {
+    return 'mobile';
+  }
+
+  if (width <= BREAKPOINTS.TABLET) {
+    return 'tablet';
+  }
+
+  return 'desktop';
 }
 
 /**
@@ -106,15 +151,26 @@ export function addResizeListener(callback) {
       width: getScreenWidth(),
       height: getScreenHeight(),
       deviceType: getDeviceType(),
-      orientation: getOrientation()
+      orientation: getOrientation(),
+      breakpoint: getScreenBreakpoint()
     });
   };
 
+  handleResize();
+
+  const resizeObserver = window.matchMedia ? window.matchMedia('(orientation: portrait)') : null;
+
   window.addEventListener('resize', handleResize);
   window.addEventListener('orientationchange', handleResize);
+  if (resizeObserver && typeof resizeObserver.addEventListener === 'function') {
+    resizeObserver.addEventListener('change', handleResize);
+  }
 
   return () => {
     window.removeEventListener('resize', handleResize);
     window.removeEventListener('orientationchange', handleResize);
+    if (resizeObserver && typeof resizeObserver.removeEventListener === 'function') {
+      resizeObserver.removeEventListener('change', handleResize);
+    }
   };
 } 

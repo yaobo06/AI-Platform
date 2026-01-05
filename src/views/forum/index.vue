@@ -2,12 +2,12 @@
   <div class="forum-container has-global-navbar">
     <!-- 全局导航栏 -->
     <GlobalNavbar />
-    
+
     <!-- 返回按钮 -->
     <div class="back-button-container">
-      <el-button 
-        class="back-button" 
-        type="primary" 
+      <el-button
+        class="back-button"
+        type="primary"
         size="medium"
         circle
         @click="goBack"
@@ -25,30 +25,30 @@
           <p class="subtitle">分享AI知识，探寻技术可能</p>
         </div>
         <div class="forum-actions">
-          <el-input
+          <el-autocomplete
             v-model="searchQuery"
+            :fetch-suggestions="querySearch"
             placeholder="搜索帖子"
             prefix-icon="el-icon-search"
             class="search-input"
             clearable
+            @select="handleSearchSelect"
+            @keyup.enter.native="handleSearch"
+            @focus="handleSearchFocus"
+            popper-class="search-suggestions"
           />
-          <!-- 用户信息显示 -->
-          <div v-if="isLoggedIn" class="user-info">
-            <el-avatar :src="userAvatar" :size="32" class="user-avatar"></el-avatar>
-            <span class="username">{{ userName }}</span>
-            <el-button 
-              type="primary" 
-              @click="handlePostClick" 
-              icon="el-icon-edit">
-              发布帖子
-            </el-button>
-          </div>
-          <el-button 
-            v-else
-            type="primary" 
-            @click="handlePostClick" 
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            @click="handleSearch"
+            class="search-button">
+            搜索
+          </el-button>
+          <el-button
+            type="primary"
+            @click="handlePostClick"
             icon="el-icon-edit">
-            登录后发帖
+            {{ isLoggedIn ? '发布帖子' : '登录后发帖' }}
           </el-button>
         </div>
       </div>
@@ -65,8 +65,8 @@
               <div v-if="filteredPosts.length === 0" class="empty-state">
                 <i class="el-icon-chat-dot-square"></i>
                 <p>暂无相关帖子</p>
-                <el-button 
-                  type="primary" 
+                <el-button
+                  type="primary"
                   @click="handlePostClick"
                   :disabled="!isLoggedIn">
                   {{ isLoggedIn ? '发布第一个帖子' : '登录后发帖' }}
@@ -111,33 +111,57 @@
         <!-- 热门标签 -->
         <div class="sidebar-card hot-tags">
           <h3>热门标签</h3>
-          <div class="tags-content">
+          <div class="tags-content" v-if="hotTags && hotTags.length > 0">
             <el-tag
-              v-for="tag in hotTags"
-              :key="tag.name"
-              :type="tag.type"
+              v-for="(tag, index) in hotTags"
+              :key="tag.tagName || tag.name || index"
+              :type="getTagType(index)"
               size="small"
               effect="plain"
               class="tag-item"
+              @click="searchTag(tag.tagName || tag.name)"
             >
-              {{ tag.name }}
-              <span class="tag-count">({{ tag.count }})</span>
+              {{ tag.tagName || tag.name }}
+              <span class="tag-count">({{ tag.count || 0 }})</span>
             </el-tag>
+          </div>
+          <div v-else class="empty-tags">
+            <p>暂无热门标签</p>
           </div>
         </div>
 
-        <!-- 活跃用户 -->
-        <div class="sidebar-card active-users">
-          <h3>活跃用户</h3>
-          <div class="users-content">
-            <div v-for="user in activeUsers" :key="user.id" class="user-item">
-              <el-avatar :src="user.avatar" :size="32"></el-avatar>
-              <div class="user-info">
-                <span class="username">{{ user.name }}</span>
-                <span class="post-count">发帖 {{ user.posts }}</span>
+        <!-- 大家都在看 -->
+        <div class="sidebar-card trending-posts">
+          <h3>大家都在看</h3>
+          <div class="trending-content">
+            <div
+              v-for="post in trendingPosts"
+              :key="post.id"
+              class="trending-item"
+              @click="viewPost({ id: post.id })">
+              <div class="trending-post-info">
+                <div class="trending-title-wrapper">
+                  <span class="trending-title-main">{{ post.mainTitle || post.title }}</span>
+                  <span v-if="post.subTitle" class="trending-title-sub">{{ post.subTitle }}</span>
+                </div>
+                <span class="author-name">{{ post.authorName }}</span>
               </div>
             </div>
+            <div v-if="trendingPosts.length === 0" class="empty-trending">
+              <p>暂无热门帖子</p>
+            </div>
           </div>
+          <!-- 分页 -->
+          <el-pagination
+            v-if="trendingTotal > trendingPageSize"
+            small
+            layout="prev, pager, next"
+            :total="trendingTotal"
+            :page-size="trendingPageSize"
+            :current-page="trendingCurrentPage"
+            @current-change="handleTrendingPageChange"
+            class="trending-pagination">
+          </el-pagination>
         </div>
       </div>
     </div>
@@ -152,9 +176,9 @@
 </template>
 
 <script>
-import { getPostList, createPost, getCategories, getStats } from '@/api/forum'
-import { getToken } from '@/utils/auth'
-import { mapGetters } from 'vuex'
+import { getPostList, createPost, getStats, getTrendingPosts, getHotTags } from '@/api/forum'
+import { fetchAndFormatCategories } from '@/utils/forum-utils'
+import { getForumToken } from '@/utils/forum-auth'
 import PostList from './components/PostList.vue'
 import PostForm from './components/PostForm.vue'
 import GlobalNavbar from '@/components/GlobalNavbar'
@@ -183,11 +207,10 @@ export default {
         { name: 'Claude', count: 64, type: 'info' },
         { name: 'Gemini', count: 52, type: 'danger' }
       ],
-      activeUsers: [
-        { id: 1, name: '张三', avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png', posts: 32 },
-        { id: 2, name: '李四', avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png', posts: 28 },
-        { id: 3, name: '王五', avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png', posts: 25 }
-      ],
+      trendingPosts: [],
+      trendingCurrentPage: 1,
+      trendingPageSize: 5,
+      trendingTotal: 0,
       stats: {
         totalPosts: 0,
         totalUsers: 0,
@@ -197,10 +220,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'name',
-      'avatar'
-    ]),
     filteredPosts() {
       let filtered = this.posts
 
@@ -230,13 +249,7 @@ export default {
       return this.stats.totalComments
     },
     isLoggedIn() {
-      return !!getToken()
-    },
-    userName() {
-      return this.name || '用户'
-    },
-    userAvatar() {
-      return this.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+      return !!getForumToken()
     }
   },
   created() {
@@ -247,28 +260,13 @@ export default {
       await this.fetchCategories()
       await this.fetchPosts()
       await this.fetchStats()
+      await this.fetchTrendingPosts()
+      await this.fetchHotTags()
     },
     async fetchCategories() {
-      try {
-        const response = await getCategories()
-        if (response.code === 200) {
-          const fetched = (response.data || [])
-            .filter(item => item.status !== '1')
-            .map(item => ({
-              id: String(item.categoryId),
-              name: item.categoryName,
-              description: item.description
-            }))
-          this.categories = [{ id: 'all', name: '全部' }, ...fetched]
-          this.categoryMap = fetched.reduce((acc, cur) => {
-            acc[cur.id] = cur.name
-            return acc
-          }, {})
-        }
-      } catch (error) {
-        console.error('获取分类列表失败:', error)
-        this.$message.error('获取分类列表失败')
-      }
+      const { categories, categoryMap } = await fetchAndFormatCategories()
+      this.categories = categories
+      this.categoryMap = categoryMap
     },
     async fetchPosts() {
       try {
@@ -285,19 +283,19 @@ export default {
           this.posts = list.map(item => {
             const content = item.content || ''
             return {
-              id: item.postId,
+              id: item.id || item.postId, // 兼容两种字段名
               title: item.title,
               excerpt: content.length > 100 ? content.substring(0, 100) + '...' : content,
               author: {
-                name: item.nickName || item.userName,
-                avatar: item.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+                name: item.authorName || item.nickName || item.userName,
+                avatar: item.authorAvatarUrl || item.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
               },
-              createTime: item.createTime,
+              createTime: item.createdAt || item.createTime,
               views: item.viewCount || 0,
-              comments: item.replyCount || 0,
+              comments: item.commentCount || item.replyCount || 0,
               likes: item.likeCount || 0,
-              categoryId: item.categoryId ? String(item.categoryId) : undefined,
-              categoryName: item.categoryName
+              categoryId: item.categoryId ? String(item.categoryId) : (item.category || undefined),
+              categoryName: item.categoryName || item.category
             }
           })
         }
@@ -315,19 +313,25 @@ export default {
     },
     async submitPost(postData) {
       try {
+        // 将 categoryId 转换为 category 名称
+        let category = postData.category
+        if (category && this.categoryMap[category]) {
+          // 如果 category 是 ID，转换为名称
+          category = this.categoryMap[category]
+        }
+
         const submitData = {
           title: postData.title,
           content: postData.content,
-          categoryId: Number(postData.category),
-          contentType: '1', // 1表示文本
-          tags: postData.tags.join(',') // 将标签数组转换为字符串
+          category: category || postData.category, // 优先使用 category 名称
+          categoryId: postData.category ? Number(postData.category) : undefined // 兼容 categoryId
         }
-        
+
         console.log('提交发帖数据:', submitData)
-        
+
         const response = await createPost(submitData)
         console.log('发帖响应:', response)
-        
+
         if (response.code === 200) {
           this.$message.success('发布成功！')
           this.showPostDialog = false
@@ -357,6 +361,41 @@ export default {
         console.error('获取统计数据失败:', error)
       }
     },
+    async fetchTrendingPosts() {
+      try {
+        const response = await getTrendingPosts(this.trendingCurrentPage, this.trendingPageSize)
+        if (response.code === 200) {
+          const data = response.data || {}
+          this.trendingPosts = data.records || []
+          // 确保分页信息正确更新
+          if (data.total !== undefined) {
+            this.trendingTotal = data.total || 0
+          }
+          if (data.current !== undefined) {
+            this.trendingCurrentPage = data.current || 1
+          }
+          if (data.size !== undefined) {
+            this.trendingPageSize = data.size || 5
+          }
+        }
+      } catch (error) {
+        console.error('获取热门帖子失败:', error)
+      }
+    },
+    handleTrendingPageChange(page) {
+      this.trendingCurrentPage = page
+      this.fetchTrendingPosts()
+    },
+    async fetchHotTags() {
+      try {
+        const response = await getHotTags(10)
+        if (response.code === 200) {
+          this.hotTags = response.data || []
+        }
+      } catch (error) {
+        console.error('获取热门标签失败:', error)
+      }
+    },
     goBack() {
       this.$router.push('/introduction');
     },
@@ -365,8 +404,65 @@ export default {
         this.showPostDialog = true;
       } else {
         this.$message.warning('请先登录才能发帖！');
-        this.$router.push('/login');
+        this.$router.push({ path: '/forum/login', query: { redirect: '/forum' } });
       }
+    },
+    handleSearch() {
+      if (this.searchQuery && this.searchQuery.trim()) {
+        this.$router.push({
+          path: '/forum/search',
+          query: {
+            q: this.searchQuery.trim(),
+            mode: 'hybrid'
+          }
+        })
+      } else {
+        this.$message.warning('请输入搜索关键词')
+      }
+    },
+    handleSearchFocus() {
+      // 搜索框获得焦点时，显示搜索建议
+    },
+    querySearch(queryString, cb) {
+      // 搜索建议功能
+      if (!queryString || queryString.trim() === '') {
+        // 如果没有输入，显示热门标签作为建议
+        const suggestions = this.hotTags.slice(0, 5).map(tag => ({
+          value: tag.name || tag.tagName,
+          label: `${tag.name || tag.tagName} (${tag.count || 0})`
+        }))
+        cb(suggestions)
+        return
+      }
+
+      // 从帖子标题中搜索匹配的建议
+      const query = queryString.toLowerCase()
+      const suggestions = this.posts
+        .filter(post => {
+          const title = (post.title || '').toLowerCase()
+          return title.includes(query)
+        })
+        .slice(0, 5)
+        .map(post => ({
+          value: post.title,
+          label: post.title
+        }))
+
+      cb(suggestions)
+    },
+    handleSearchSelect(item) {
+      this.searchQuery = item.value
+      this.handleSearch()
+    },
+    searchTag(tagName) {
+      if (tagName) {
+        this.searchQuery = tagName
+        this.handleSearch()
+      }
+    },
+    getTagType(index) {
+      const types = ['', 'success', 'warning', 'info', 'danger']
+      return types[index % types.length]
     }
   },
   watch: {
@@ -390,7 +486,7 @@ export default {
   position: fixed;
   top: 90px; // 调整位置，避免与导航栏重叠
   left: 30px; // 稍微向右移动
-  z-index: 999; 
+  z-index: 999;
 
   .back-button {
     width: 48px;
@@ -496,7 +592,7 @@ export default {
 
   .header-left {
     margin-left: 90px; // 调整左边距，与返回按钮位置协调
-    
+
     h1 {
       font-size: 32px;
       font-weight: 600;
@@ -712,6 +808,7 @@ export default {
 
       &:hover {
         transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .tag-count {
@@ -720,40 +817,85 @@ export default {
         margin-left: 2px;
       }
     }
+
+    .empty-tags {
+      text-align: center;
+      padding: 20px;
+      color: #909399;
+      font-size: 14px;
+    }
   }
 
-  .active-users {
-    .users-content {
+  .trending-posts {
+    .trending-content {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .user-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px;
+    .trending-item {
+      padding: 12px 14px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
       border-radius: 6px;
+      cursor: pointer;
       transition: all 0.3s;
 
       &:hover {
-        background: #f3f4f6;
+        border-color: #409eff;
+        background: #f5f7fa;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
       }
 
-      .user-info {
-        .username {
-          display: block;
+      .trending-post-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .trending-title-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .trending-title-main {
           font-size: 14px;
-          font-weight: 500;
-          color: #374151;
+          font-weight: 600;
+          color: #303133;
+          line-height: 1.4;
         }
 
-        .post-count {
+        .trending-title-sub {
           font-size: 12px;
-          color: #6b7280;
+          font-weight: 400;
+          color: #909399;
+          line-height: 1.4;
+          padding-left: 8px;
+          border-left: 2px solid #e5e7eb;
+          opacity: 0.8;
+        }
+
+        .author-name {
+          font-size: 12px;
+          color: #909399;
+          margin-top: 2px;
         }
       }
+    }
+
+    .empty-trending {
+      text-align: center;
+      padding: 20px;
+      color: #909399;
+      font-size: 14px;
+    }
+
+    .trending-pagination {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
     }
   }
 }
@@ -764,7 +906,7 @@ export default {
     .back-button-container {
       top: 10px;
       left: 10px;
-      
+
       .back-button {
         width: 40px;
         height: 40px;
@@ -773,30 +915,30 @@ export default {
 
     .forum-header {
       padding: 80px 15px 30px;
-      
+
       .header-content {
         flex-direction: column;
         align-items: stretch;
         gap: 20px;
-        
+
         .header-left {
           margin-left: 0;
           text-align: center;
-          
+
           h1 {
             font-size: 2rem;
           }
-          
+
           .subtitle {
             font-size: 1rem;
           }
         }
-        
+
         .forum-actions {
           .search-input {
             margin-bottom: 10px;
           }
-          
+
           .el-button {
             width: 100%;
           }
@@ -808,15 +950,15 @@ export default {
       grid-template-columns: 1fr;
       gap: 20px;
       padding: 0 15px;
-      
+
       .forum-categories {
         padding: 15px;
-        
+
         .custom-tabs {
           :deep(.el-tabs__nav-scroll) {
             overflow-x: auto;
           }
-          
+
           :deep(.el-tabs__item) {
             padding: 0 15px;
             font-size: 14px;
@@ -824,70 +966,90 @@ export default {
           }
         }
       }
-      
+
       .forum-sidebar {
         .sidebar-card {
           padding: 15px;
           margin-bottom: 20px;
-          
+
           h3 {
             font-size: 15px;
             margin-bottom: 12px;
           }
         }
-        
+
         .forum-stats {
           .stats-content {
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
           }
-          
+
           .stat-item {
             padding: 8px;
-            
+
             i {
               font-size: 20px;
               margin-bottom: 6px;
             }
-            
+
             .stat-info {
               .stat-value {
                 font-size: 16px;
               }
-              
+
               .stat-label {
                 font-size: 12px;
               }
             }
           }
         }
-        
+
         .hot-tags {
           .tags-content {
             gap: 6px;
           }
-          
+
           .tag-item {
             font-size: 12px;
             padding: 4px 8px;
           }
         }
-        
-        .active-users {
-          .users-content {
-            gap: 10px;
+
+        .trending-posts {
+          .trending-content {
+            gap: 8px;
           }
-          
-          .user-item {
-            padding: 6px;
-            
-            .user-info {
-              .username {
-                font-size: 13px;
+
+          .trending-item {
+            padding: 10px 12px;
+
+            .trending-title-main {
+              font-size: 13px;
+            }
+
+            .trending-title-sub {
+              font-size: 11px;
+            }
+
+            .author-name {
+              font-size: 11px;
+            }
+          }
+
+          .trending-pagination {
+            :deep(.el-pagination) {
+              .el-pager li {
+                min-width: 28px;
+                height: 28px;
+                line-height: 28px;
+                font-size: 12px;
               }
-              
-              .post-count {
-                font-size: 11px;
+
+              .btn-prev,
+              .btn-next {
+                min-width: 28px;
+                height: 28px;
+                line-height: 28px;
               }
             }
           }
@@ -901,45 +1063,45 @@ export default {
   .forum-container {
     .forum-header {
       padding: 70px 10px 20px;
-      
+
       .header-content {
         .header-left {
           h1 {
             font-size: 1.8rem;
           }
-          
+
           .subtitle {
             font-size: 0.9rem;
           }
         }
       }
     }
-    
+
     .forum-main {
       padding: 0 10px;
-      
+
       .forum-categories {
         padding: 10px;
       }
-      
+
       .forum-sidebar {
         .sidebar-card {
           padding: 12px;
-          
+
           h3 {
             font-size: 14px;
           }
         }
-        
+
         .forum-stats {
           .stats-content {
             grid-template-columns: 1fr;
             gap: 6px;
           }
-          
+
           .stat-item {
             padding: 6px;
-            
+
             .stat-info {
               .stat-value {
                 font-size: 14px;
@@ -952,3 +1114,29 @@ export default {
   }
 }
 </style>
+
+<style lang="scss">
+// 搜索建议下拉框样式
+.search-suggestions {
+  .el-autocomplete-suggestion__list {
+    max-height: 300px;
+
+    li {
+      padding: 12px 20px;
+      line-height: 1.5;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #f5f7fa;
+      }
+
+      .highlight {
+        color: #409eff;
+        font-weight: 600;
+      }
+    }
+  }
+}
+</style>
+

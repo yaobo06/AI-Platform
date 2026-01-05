@@ -13,16 +13,16 @@
 
       <!-- 导航菜单 -->
       <div class="navbar-nav">
-        <router-link to="/introduction" class="nav-item" 
+        <router-link to="/introduction" class="nav-item"
                      :class="{ active: $route.path === '/introduction' }">
           首页
         </router-link>
-        <router-link to="/ai-models" class="nav-item" 
+        <router-link to="/ai-models" class="nav-item"
                      :class="{ active: $route.path === '/ai-models' }">
           AI应用
           <i class="el-icon-arrow-right nav-arrow"></i>
         </router-link>
-        <router-link to="/forum" class="nav-item" 
+        <router-link to="/forum" class="nav-item"
                      :class="{ active: $route.path === '/forum' || $route.path.startsWith('/forum/') }">
           论坛
           <i class="el-icon-arrow-right nav-arrow"></i>
@@ -40,8 +40,35 @@
 
       <!-- 用户操作区 -->
       <div class="navbar-actions">
-        <el-button type="primary" @click="handleLogin">登录</el-button>
-        <el-button type="text" @click="handleRegister">注册</el-button>
+        <template v-if="isLoggedIn">
+          <!-- 登录后：显示主页链接和头像 -->
+          <router-link to="/introduction" class="home-link">
+            <i class="el-icon-house"></i>
+            <span>主页</span>
+          </router-link>
+          <el-dropdown @command="handleUserCommand" trigger="click" placement="bottom-end">
+            <div class="user-info">
+              <el-avatar
+                :src="userAvatar"
+                :size="36"
+                class="user-avatar">
+              </el-avatar>
+            </div>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="profile">
+                <i class="el-icon-user"></i> 个人中心
+              </el-dropdown-item>
+              <el-dropdown-item divided command="logout">
+                <i class="el-icon-switch-button"></i> 退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
+        <template v-else>
+          <!-- 未登录：显示登录和注册按钮 -->
+          <el-button type="primary" @click="handleLogin">登录</el-button>
+          <el-button @click="handleRegister">注册</el-button>
+        </template>
       </div>
 
       <!-- 移动端菜单按钮 -->
@@ -57,27 +84,64 @@
       <router-link to="/forum" class="mobile-nav-item" @click="closeMobileMenu">论坛</router-link>
       <a href="#" class="mobile-nav-item" @click="closeMobileMenu">社区</a>
       <div class="mobile-actions">
-        <el-button type="primary" size="small" @click="handleLogin">登录</el-button>
-        <el-button type="text" size="small" @click="handleRegister">注册</el-button>
+        <div v-if="isLoggedIn" class="mobile-user-info">
+          <el-avatar
+            :src="userAvatar"
+            :size="32"
+            @click.native="handleProfile">
+          </el-avatar>
+          <span class="mobile-user-name">{{ userName }}</span>
+        </div>
+        <template v-else>
+          <el-button type="primary" size="small" @click="handleLogin">登录</el-button>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import forumAuthMixin from '@/mixins/forum-auth'
+
 export default {
   name: 'GlobalNavbar',
+  mixins: [forumAuthMixin],
   data() {
     return {
       showMobileMenu: false
     }
   },
+  computed: {
+    isLoggedIn() {
+      return this.isForumLoggedIn
+    },
+    userName() {
+      return this.forumUserName
+    },
+    userAvatar() {
+      return this.forumUserAvatar
+    },
+    userInfo() {
+      return this.forumUserInfo
+    }
+  },
   methods: {
+    handleUserCommand(command) {
+      if (command === 'profile') {
+        this.$router.push('/forum/profile')
+      } else if (command === 'logout') {
+        this.doForumLogout()
+        this.$router.push('/introduction')
+      }
+    },
     handleLogin() {
-      this.$router.push('/login');
+      this.$router.push('/forum/login');
     },
     handleRegister() {
-      this.$router.push('/register');
+      this.$router.push('/forum/login?action=register');
+    },
+    handleProfile() {
+      this.$router.push('/forum/profile');
     },
     toggleMobileMenu() {
       this.showMobileMenu = !this.showMobileMenu;
@@ -251,6 +315,41 @@ export default {
     align-items: center;
     gap: 12px;
 
+    .home-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+
+      i {
+        font-size: 16px;
+      }
+
+      &:hover {
+        color: #1e40af;
+        background: #f3f4f6;
+      }
+    }
+
+    .user-info {
+      .user-avatar {
+        cursor: pointer;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: #1e40af;
+          transform: scale(1.05);
+        }
+      }
+    }
+
     .el-button {
       border-radius: 6px;
       font-weight: 500;
@@ -265,6 +364,19 @@ export default {
         }
       }
 
+      &--default {
+        background: white;
+        border: 1px solid #d1d5db;
+        color: #6b7280;
+        padding: 8px 20px;
+
+        &:hover {
+          background: #f9fafb;
+          border-color: #9ca3af;
+          color: #1f2937;
+        }
+      }
+
       &--text {
         color: #6b7280;
         padding: 8px 16px;
@@ -272,6 +384,45 @@ export default {
         &:hover {
           color: #1e40af;
           background: #f3f4f6;
+        }
+      }
+    }
+  }
+
+  .user-menu {
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+
+      .user-details {
+        flex: 1;
+
+        .user-name {
+          font-size: 14px;
+          font-weight: 600;
+          color: #1f2937;
+        }
+      }
+    }
+
+    .menu-items {
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 0;
+        cursor: pointer;
+        color: #6b7280;
+        transition: color 0.3s ease;
+
+        i {
+          font-size: 16px;
+        }
+
+        &:hover {
+          color: #1e40af;
         }
       }
     }
@@ -329,6 +480,21 @@ export default {
       margin-top: 20px;
       display: flex;
       gap: 12px;
+      align-items: center;
+
+      .mobile-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+
+        .mobile-user-name {
+          flex: 1;
+          font-size: 14px;
+          color: #1f2937;
+          font-weight: 500;
+        }
+      }
     }
   }
 
@@ -349,4 +515,4 @@ export default {
 .has-global-navbar {
   padding-top: 64px;
 }
-</style> 
+</style>

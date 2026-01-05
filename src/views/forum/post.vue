@@ -15,8 +15,8 @@
         {{ post.content }}
       </div>
       <div class="post-actions">
-        <el-button 
-          type="text" 
+        <el-button
+          type="text"
           @click="handleLike"
           :disabled="!isLoggedIn">
           <i :class="['el-icon-star-off', { 'is-liked': post.isLiked }]"></i>
@@ -32,7 +32,7 @@
     <!-- 评论区 -->
     <div class="comments-section" v-if="post">
       <h2>评论 ({{ post.comments }})</h2>
-      
+
       <!-- 评论输入框 -->
       <div class="comment-input">
         <div v-if="!isLoggedIn" class="login-prompt">
@@ -93,8 +93,9 @@
 </template>
 
 <script>
-import { getPostDetail, likePost, unlikePost, getComments, addComment, getCategories } from '@/api/forum'
-import { getToken } from '@/utils/auth'
+import { getPostDetail, likePost, unlikePost, getComments, addComment } from '@/api/forum'
+import { fetchAndFormatCategories } from '@/utils/forum-utils'
+import { getForumToken } from '@/utils/forum-auth'
 
 export default {
   name: 'PostDetail',
@@ -109,7 +110,7 @@ export default {
   },
   computed: {
     isLoggedIn() {
-      return getToken()
+      return !!getForumToken()
     }
   },
   created() {
@@ -122,46 +123,37 @@ export default {
       await this.fetchComments()
     },
     async fetchCategories() {
-      try {
-        const response = await getCategories()
-        if (response.code === 200) {
-          const list = Array.isArray(response.data) ? response.data : []
-          this.categories = list.map(item => ({
-            id: String(item.categoryId),
-            name: item.categoryName,
-            status: item.status
-          }))
-          this.categoryMap = this.categories.reduce((acc, cur) => {
-            if (cur.status !== '1') {
-              acc[cur.id] = cur.name
-            }
-            return acc
-          }, {})
-        }
-      } catch (error) {
-        console.error('获取分类信息失败:', error)
-      }
+      const { categories, categoryMap } = await fetchAndFormatCategories({ filterDisabled: false })
+      this.categories = categories.filter(cat => cat.id !== 'all') // 帖子页面不需要"全部"
+      this.categoryMap = categoryMap
     },
     async fetchPostDetail() {
       try {
         const postId = this.$route.params.id
+        if (!postId) {
+          this.$message.error('帖子ID不能为空')
+          this.$router.push('/forum')
+          return
+        }
         const response = await getPostDetail(postId)
         if (response.code === 200) {
+          // 后端返回的数据结构：{ data: { post: {...}, comments: {...} } }
+          const postData = response.data.post || response.data
           this.post = {
-            id: response.data.postId,
-            title: response.data.title,
-            content: response.data.content,
-            author: { 
-              name: response.data.nickName || response.data.userName, 
-              avatar: response.data.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' 
+            id: postData.id || postData.postId,
+            title: postData.title,
+            content: postData.content,
+            author: {
+              name: postData.authorName || postData.nickName || postData.userName,
+              avatar: postData.authorAvatarUrl || postData.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
             },
-            createTime: response.data.createTime,
-            views: response.data.viewCount || 0,
-            comments: response.data.replyCount || 0,
-            likes: response.data.likeCount || 0,
-            isLiked: response.data.remark === '1',
-            categoryId: response.data.categoryId ? String(response.data.categoryId) : undefined,
-            categoryName: response.data.categoryName
+            createTime: postData.createdAt || postData.createTime,
+            views: postData.viewCount || 0,
+            comments: postData.commentCount || postData.replyCount || 0,
+            likes: postData.likeCount || 0,
+            isLiked: postData.remark === '1',
+            categoryId: postData.categoryId ? String(postData.categoryId) : (postData.category || undefined),
+            categoryName: postData.categoryName || postData.category
           }
         }
       } catch (error) {
@@ -172,25 +164,37 @@ export default {
     async fetchComments() {
       try {
         const postId = this.$route.params.id
+        if (!postId) {
+          return
+        }
         const response = await getComments(postId)
         if (response.code === 200) {
-          const list = Array.isArray(response.data) ? response.data : []
+          // 后端返回的数据结构：{ data: { records: [...], total: ... } }
+          let list = []
+          if (response.data && Array.isArray(response.data)) {
+            list = response.data
+          } else if (response.data && response.data.records && Array.isArray(response.data.records)) {
+            list = response.data.records
+          } else if (response.data && response.data.list && Array.isArray(response.data.list)) {
+            list = response.data.list
+          }
+
           this.comments = list.map(item => ({
-            id: item.replyId,
+            id: item.id || item.commentId,
             content: item.content,
-            author: { 
-              name: item.nickName || item.userName, 
-              avatar: item.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' 
+            author: {
+              name: item.authorName || item.nickName || item.userName,
+              avatar: item.authorAvatarUrl || item.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
             },
-            createTime: item.createTime,
-            replies: Array.isArray(item.children) ? item.children.map(child => ({
-              id: child.replyId,
+            createTime: item.createdAt || item.createTime,
+            replies: Array.isArray(item.replies) ? item.replies.map(child => ({
+              id: child.id || child.commentId,
               content: child.content,
-              author: { 
-                name: child.nickName || child.userName, 
-                avatar: child.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png' 
+              author: {
+                name: child.authorName || child.nickName || child.userName,
+                avatar: child.authorAvatarUrl || child.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
               },
-              createTime: child.createTime
+              createTime: child.createdAt || child.createTime
             })) : []
           }))
         }
@@ -206,10 +210,15 @@ export default {
     async handleLike() {
       if (!this.isLoggedIn) {
         this.$message.warning('请先登录才能点赞！')
-        this.$router.push('/login')
+        this.$router.push({ path: '/forum/login', query: { redirect: this.$route.fullPath } })
         return
       }
-      
+
+      if (!this.post || !this.post.id) {
+        this.$message.error('帖子信息不完整')
+        return
+      }
+
       try {
         if (this.post.isLiked) {
           await unlikePost(this.post.id)
@@ -227,19 +236,24 @@ export default {
     async submitComment() {
       if (!this.isLoggedIn) {
         this.$message.warning('请先登录才能发表评论！')
-        this.$router.push('/login')
+        this.$router.push({ path: '/forum/login', query: { redirect: this.$route.fullPath } })
         return
       }
-      
+
       if (!this.newComment.trim()) return
-      
+
+      if (!this.post || !this.post.id) {
+        this.$message.error('帖子信息不完整')
+        return
+      }
+
       try {
         const commentData = {
           content: this.newComment,
           parentId: 0
         }
         await addComment(this.post.id, commentData)
-        
+
         this.newComment = ''
         this.$message.success('评论成功')
         // 重新获取评论列表
@@ -257,7 +271,7 @@ export default {
       this.newComment = `@${comment.author.name} `
     },
     goToLogin() {
-      this.$router.push('/login')
+      this.$router.push({ path: '/forum/login', query: { redirect: this.$route.fullPath } })
     }
   }
 }
@@ -321,7 +335,7 @@ export default {
 
       i {
         margin-right: 4px;
-        
+
         &.is-liked {
           color: #409EFF;
         }
@@ -425,4 +439,4 @@ export default {
     }
   }
 }
-</style> 
+</style>

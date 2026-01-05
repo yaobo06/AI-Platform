@@ -1,7 +1,8 @@
 import axios from 'axios'
-import { Notification, MessageBox, Message, Loading } from 'element-ui'
+import { Notification, Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import { getForumToken } from '@/utils/forum-auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
@@ -26,7 +27,14 @@ service.interceptors.request.use(config => {
   const isToken = (config.headers || {}).isToken === false
   // 是否需要防止数据重复提交
   const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
-  if (getToken() && !isToken) {
+
+  // 论坛相关接口使用Forum-Token
+  if (config.url && config.url.startsWith('/forum')) {
+    const forumToken = getForumToken()
+    if (forumToken && !isToken) {
+      config.headers['Forum-Token'] = forumToken
+    }
+  } else if (getToken() && !isToken) {
     config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
   }
   // get请求映射params参数
@@ -82,17 +90,14 @@ service.interceptors.response.use(res => {
       return res.data
     }
     if (code === 401) {
-      if (!isRelogin.show) {
-        isRelogin.show = true;
-        MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', { confirmButtonText: '重新登录', cancelButtonText: '取消', type: 'warning' }).then(() => {
-          isRelogin.show = false;
-          store.dispatch('LogOut').then(() => {
-            location.href = '/index';
-          })
-      }).catch(() => {
-        isRelogin.show = false;
-      });
-    }
+      // 移除登录过期提示框，静默处理
+      // 如果是论坛接口的401，不处理（由前端自行处理）
+      const isForumApi = res.config && res.config.url && res.config.url.startsWith('/forum/');
+      if (!isForumApi) {
+        // 主系统接口401，静默拒绝
+        return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
+      }
+      // 论坛接口401，直接拒绝，不显示提示
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
       Message({ message: msg, type: 'error' })
@@ -110,6 +115,14 @@ service.interceptors.response.use(res => {
   error => {
     console.log('err' + error)
     let { message } = error;
+    const status = error.response?.status;
+
+    // 404错误静默处理，不显示错误消息（可能是后端未启动）
+    if (status === 404) {
+      console.warn('接口不存在或后端服务未启动:', error.config?.url)
+      return Promise.reject(error)
+    }
+
     if (message == "Network Error") {
       message = "后端接口连接异常";
     } else if (message.includes("timeout")) {

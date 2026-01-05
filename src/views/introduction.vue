@@ -87,8 +87,35 @@
         <li>更多</li>
       </ul>
       <div class="user-user">
-        <el-button type="primary" size="small">登录</el-button>
-        <el-button size="small">注册</el-button>
+        <template v-if="isLoggedIn">
+          <!-- 登录后：显示主页链接和头像 -->
+          <router-link to="/introduction" class="home-link">
+            <i class="el-icon-house"></i>
+            <span>主页</span>
+          </router-link>
+          <el-dropdown @command="handleUserCommand" trigger="click" placement="bottom-end">
+            <div class="user-info">
+              <el-avatar
+                :src="userAvatar"
+                :size="32"
+                class="user-avatar">
+              </el-avatar>
+            </div>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="profile">
+                <i class="el-icon-user"></i> 个人中心
+              </el-dropdown-item>
+              <el-dropdown-item divided command="logout">
+                <i class="el-icon-switch-button"></i> 退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
+        <template v-else>
+          <!-- 未登录：显示登录和注册按钮 -->
+          <el-button type="primary" size="small" @click="handleLogin">登录</el-button>
+          <el-button size="small" @click="handleRegister">注册</el-button>
+        </template>
       </div>
     </nav>
 
@@ -194,7 +221,7 @@
           </span>
           寻找你需要的一切
         </div>
-        <el-button type="primary">进入</el-button>
+        <el-button type="primary" @click="goToCommunity">进入</el-button>
       </div>
       <div class="ai-right">
         <img src="/images/page/art_corridor.png" class="ai-img" />
@@ -227,9 +254,11 @@
 
 <script>
 import { getResponsiveClass } from '@/utils/mobile'
+import forumAuthMixin from '@/mixins/forum-auth'
 
 export default {
   name: 'introduction',
+  mixins: [forumAuthMixin],
   data() {
     return {
       showNav: true,
@@ -338,8 +367,19 @@ export default {
       activeCategory: 'all',
     };
   },
+  computed: {
+    isLoggedIn() {
+      return this.isForumLoggedIn
+    },
+    userAvatar() {
+      return this.forumUserAvatar
+    },
+    userInfo() {
+      return this.forumUserInfo
+    }
+  },
   created() {
-    this.fetchHotPosts();
+    this.fetchHotPosts()
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
@@ -348,6 +388,19 @@ export default {
     window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
+    handleUserCommand(command) {
+      if (command === 'profile') {
+        this.$router.push('/forum/profile')
+      } else if (command === 'logout') {
+        this.doForumLogout()
+      }
+    },
+    handleLogin() {
+      this.$router.push('/forum/login');
+    },
+    handleRegister() {
+      this.$router.push('/forum/login?action=register');
+    },
     goToForum() {
       this.$router.push('/forum');
     },
@@ -633,7 +686,43 @@ $breakpoint-desktop: 1280px;
 
   .user-user {
     display: flex;
+    align-items: center;
     gap: 12px;
+
+    .home-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+
+      i {
+        font-size: 16px;
+      }
+
+      &:hover {
+        color: #1e40af;
+        background: #f3f4f6;
+      }
+    }
+
+    .user-info {
+      .user-avatar {
+        cursor: pointer;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: #1e40af;
+          transform: scale(1.05);
+        }
+      }
+    }
 
     .el-button--primary {
       background: #1e40af;
@@ -1230,93 +1319,93 @@ $breakpoint-desktop: 1280px;
 @media (max-width: $breakpoint-mobile) {
   .user-nav {
     padding: 12px 16px;
-    
+
     .user-menu {
       display: none; // 移动端隐藏导航菜单
     }
-    
+
     .user-user {
       gap: 8px;
-      
+
       .el-button {
         padding: 8px 16px;
         font-size: 14px;
       }
     }
   }
-  
+
   .user-banner {
     padding-top: 80px;
     margin-bottom: 40px;
-    
+
     .course-carousel {
       height: 250px !important;
     }
   }
-  
+
   .user-brands {
     padding: 40px 0 50px 0;
     margin: 20px auto;
-    
+
     .section-title {
       font-size: 2.5rem;
     }
-    
+
     .brands-carousel {
       padding: 0 20px;
       margin-bottom: 60px;
     }
-    
+
     .brands-slide {
       gap: 16px;
       flex-wrap: wrap;
       justify-content: center;
-      
+
       .brand-item {
         width: calc(50% - 8px);
         margin-bottom: 16px;
         padding: 16px;
-        
+
         img {
           width: 40px;
           height: 40px;
         }
-        
+
         span {
           font-size: 12px;
         }
       }
     }
   }
-  
+
   .user-learn-recommend {
     .section-title {
       font-size: 2.5rem;
     }
-    
+
     .learn-cards {
       grid-template-columns: 1fr;
       gap: 20px;
     }
-    
+
     .learn-card {
       .learn-img {
         height: 150px;
       }
-      
+
       .learn-content {
         padding: 16px;
-        
+
         .learn-title {
           font-size: 16px;
           margin-bottom: 12px;
         }
-        
+
         .learn-info {
           flex-direction: column;
           align-items: flex-start;
           gap: 8px;
-          
+
           .stats {
             gap: 16px;
           }
@@ -1324,72 +1413,72 @@ $breakpoint-desktop: 1280px;
       }
     }
   }
-  
+
   .user-features {
     flex-direction: column;
     gap: 40px;
-    
+
     .features-left {
       grid-template-columns: 1fr;
       gap: 20px;
-      
+
       .feature-block {
         padding: 24px 20px;
-        
+
         .feature-title {
           font-size: 1.2rem;
         }
-        
+
         .feature-desc {
           font-size: 1rem;
         }
       }
     }
-    
+
     .features-right {
       order: -1;
     }
   }
-  
+
   .user-ai-section {
     flex-direction: column;
     gap: 40px;
-    
+
     .ai-left {
       padding-top: 0;
-      
+
       .ai-title {
         font-size: 3rem;
         margin-bottom: 30px;
       }
-      
+
       .ai-desc {
         font-size: 1.2rem;
         margin-bottom: 30px;
       }
-      
+
       .el-button--primary {
         padding: 16px 32px;
         font-size: 18px;
       }
     }
-    
+
     .ai-right {
       order: -1;
     }
   }
-  
+
   .user-footer {
     padding: 40px 0 30px;
-    
+
     .footer-links {
       grid-template-columns: 1fr;
       gap: 1px;
-      
+
       .footer-link {
         padding: 24px 20px;
         font-size: 1rem;
-        
+
         i {
           font-size: 20px;
         }
@@ -1402,33 +1491,33 @@ $breakpoint-desktop: 1280px;
 @media (min-width: #{$breakpoint-mobile + 1px}) and (max-width: $breakpoint-tablet) {
   .user-nav {
     padding: 16px 32px;
-    
+
     .user-menu {
       gap: 24px;
-      
+
       li, .model-link {
         font-size: 15px;
       }
     }
   }
-  
+
   .user-brands .brands-slide {
     gap: 20px;
-    
+
     .brand-item {
       padding: 20px;
-      
+
       img {
         width: 50px;
         height: 50px;
       }
     }
   }
-  
+
   .user-learn-recommend .learn-cards {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .user-features .features-left {
     grid-template-columns: repeat(2, 1fr);
   }

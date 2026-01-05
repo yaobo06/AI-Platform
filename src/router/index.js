@@ -44,6 +44,17 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login'),
+    hidden: true,
+    meta: { title: '管理员登录', requiresAdmin: true }
+  },
+  {
+    path: '/user/login',
+    component: () => import('@/views/user/login'),
+    hidden: true
+  },
+  {
+    path: '/user/register',
+    component: () => import('@/views/user/register'),
     hidden: true
   },
   {
@@ -68,6 +79,11 @@ export const constantRoutes = [
   },
 
   {
+    path: '/forum/login',
+    component: () => import('@/views/forum/login'),
+    hidden: true
+  },
+  {
     path: '/forum',
     component: () => import('@/views/forum/index'),
     hidden: true
@@ -78,8 +94,13 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/forum/test',
-    component: () => import('@/views/forum/test'),
+    path: '/forum/profile',
+    component: () => import('@/views/forum/profile'),
+    hidden: true
+  },
+  {
+    path: '/forum/search',
+    component: () => import('@/views/forum/search'),
     hidden: true
   },
   {
@@ -90,7 +111,7 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'index',
+    redirect: '/introduction',
     children: [
       {
         path: 'index',
