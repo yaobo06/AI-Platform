@@ -1,0 +1,45 @@
+.DS_Store
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+**/*.log
+
+tests/**/coverage/
+tests/e2e/reports
+selenium-debug.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.local
+
+package-lock.json
+yarn.lock
+
+# 后端文件（不应该在前端项目中）
+BOOT-INF/
+ruoyi-admin/
+ruoyi-common/
+ruoyi-framework/
+ruoyi-generator/
+ruoyi-quartz/
+ruoyi-system/
+sql/
+doc/
+*.jar
+*.war
+target/
+logs/
+uploadPath/
+
+# 文档文件（后端相关）
+FORUM_IMPLEMENTATION_GUIDE.md
+LOG_FIX_README.md
+SOLUTION_SUMMARY.md
+README.md.backup
