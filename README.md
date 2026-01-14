@@ -1,6 +1,6 @@
 # AI Platform - 智能论坛平台
 
-基于 RuoYi-Vue 框架开发的智能论坛平台，集成了 DeepSeek AI、RAG 向量检索、Redis 缓存等先进技术。
+基于 RuoYi-Vue 框架开发的智能论坛平台，集成了 DeepSeek AI、RAG 向量检索、Redis 缓存等技术。
 
 ## ✨ 功能特性
 
